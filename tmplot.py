@@ -17,9 +17,9 @@ def arg_parser():
     parser.add_argument("-y", "--ydata", type = str, required = True, help = "y_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-y - \"")
     parser.add_argument("-s", "--split", type = str, default = " ", help = "Target character for data division [default: <SPACE>]")
     parser.add_argument("--prefix", type = str, default = "out", help = "output picture file prefix. [default: out]")
-    parser.add_argument("--xlabel", type = str, default = "xlabel", help = "output picture xlabel. [default: xlabel]")
-    parser.add_argument("--ylabel", type = str, default = "ylabel", help = "output picture ylabel. [default: ylabel] [default(hist): Frequency]")
-    parser.add_argument("--title", type = str, default = "title", help = "output picture title. [default: title]")
+    parser.add_argument("--xlabel", type = str, default = "x", help = "output picture xlabel. [default: x]")
+    parser.add_argument("--ylabel", type = str, default = "y", help = "output picture ylabel. [default: y] [default(hist): Frequency]")
+    parser.add_argument("--title", type = str, default = " ", help = "output picture title. [default: <NONE>]")
     parser.add_argument("--jpg", action = 'store_true', help = "Flag whether JPG output is performed. [default: <PREFIX>.png]")
     parser.add_argument("--hist-bins", type = int, default = 0, help = "number of bins in hist mode. [default: auto]")
     parser.add_argument("--hist-cumulative", action = "store_true", help = "Flag whether plot cumulative ratio with histogram")
@@ -93,14 +93,14 @@ def mode_hist(args):
         bins = int(np.log2(len(data))) + 1
     else:
         bins = args.hist_bins
-    print("[INFO] number of bins : {}".format(bins))
+    print("[INFO] number of bins : {}".format(bins), file=sys.stdout)
 
 
     # figure prepare
     sns.set(style="darkgrid", palette="muted", color_codes=True)
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
-    if args.ylabel == "ylabel":
+    if args.ylabel == "y":
         ylabel = "Frequency"
     else:
         ylabel = args.ylabel
@@ -109,7 +109,7 @@ def mode_hist(args):
     ax.grid()
 
     if args.hist_cumulative:
-        print("[INFO] plot with cumulative ratio plot")
+        print("[INFO] plot with cumulative ratio plot", file=sys.stdout)
         n, bins, patches = ax.hist(data, alpha = 0.7, bins = bins, label = ylabel)
         y2 = np.add.accumulate(n) / n.sum()
         x2 = np.convolve(bins, np.ones(2) / 2, mode="same")[1:]
@@ -117,7 +117,7 @@ def mode_hist(args):
         lines = ax2.plot(x2, y2, ls='--', color='r', marker='o', label='umulative ratio')
         plt.legend(handles=[patches[0], lines[0]])
     else:
-        print("[INFO] histogram only")
+        print("[INFO] histogram only", file=sys.stdout)
         ax.hist(data, bins = bins)
 
     fig.tight_layout()
@@ -172,7 +172,7 @@ def data_from_pipe2(args):
             xdata.append(float(a[0]))
             ydata.append(float(a[1].split("\n")[0]))
         except:
-            print("[ERROR] check target split character is correct or number of data inputed")
+            print("[ERROR] check target split character is correct or number of data inputed", file=sys.stderr)
             sys.exit(1)
 
     return xdata, ydata
@@ -247,7 +247,7 @@ if __name__ == "__main__":
         print("[INFO] bar mode", file=sys.stdout)
         mode_bar(args)
     else :
-        print("[ERROR] mode name error", file=sys.stdout)
+        print("[ERROR] mode name error", file=sys.stderr)
         sys.exit(1)
 
     print("[INFO] tmplot.py done", file=sys.stdout)
