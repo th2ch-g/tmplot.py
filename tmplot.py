@@ -5,7 +5,7 @@ import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
-
+import seaborn as sns
 
 
 def arg_parser():
@@ -15,12 +15,14 @@ def arg_parser():
     parser.add_argument("mode", help = "chose plot mode from {plot, scatter, hist, bar}", choices = ['plot', 'scatter', 'hist', 'bar'])
     parser.add_argument("-x", "--xdata", type = str, required = True, help = "x_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-x - \"")
     parser.add_argument("-y", "--ydata", type = str, required = True, help = "y_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-y - \"")
-    parser.add_argument("-s", "--split", type = str, default = " ", help = "Target character for data division")
-    parser.add_argument("--prefix", type = str, default = "out", help = "output picture file prefix")
-    parser.add_argument("--xlabel", type = str, default = "xlabel", help = "output picture xlabel")
-    parser.add_argument("--ylabel", type = str, default = "ylabel", help = "output picture ylabel")
-    parser.add_argument("--title", type = str, default = "title", help = "output picture title")
-    parser.add_argument("--jpg", action = 'store_true', help = "Flag whether JPG output is performed")
+    parser.add_argument("-s", "--split", type = str, default = " ", help = "Target character for data division [default: <SPACE>]")
+    parser.add_argument("--prefix", type = str, default = "out", help = "output picture file prefix. [default: out]")
+    parser.add_argument("--xlabel", type = str, default = "xlabel", help = "output picture xlabel. [default: xlabel]")
+    parser.add_argument("--ylabel", type = str, default = "ylabel", help = "output picture ylabel. [default: ylabel] [default(hist): Frequency]")
+    parser.add_argument("--title", type = str, default = "title", help = "output picture title. [default: title]")
+    parser.add_argument("--jpg", action = 'store_true', help = "Flag whether JPG output is performed. [default: <PREFIX>.png]")
+    parser.add_argument("--hist-bins", type = int, default = 0, help = "number of bins in hist mode. [default: auto]")
+    parser.add_argument("--hist-cumulative", action = "store_true", help = "Flag whether plot cumulative ratio with histogram")
 
 
     return parser.parse_args()
@@ -29,8 +31,11 @@ def arg_parser():
 
 def mode_plot(args):
 
+    # data input
     xdata, ydata = data_parser(args)
 
+    # figure prepare
+    sns.set(style="darkgrid", palette="muted", color_codes=True)
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
     ax.set_ylabel(args.ylabel)
@@ -41,6 +46,7 @@ def mode_plot(args):
 
     fig.tight_layout()
 
+    # save figure
     if args.jpg :
         plt.savefig(args.prefix + ".jpg")
     else :
@@ -48,8 +54,12 @@ def mode_plot(args):
 
 
 def mode_scatter(args):
+
+    # data input
     xdata, ydata = data_parser(args)
 
+    # figure prepare
+    sns.set(style="darkgrid", palette="muted", color_codes=True)
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
     ax.set_ylabel(args.ylabel)
@@ -60,35 +70,73 @@ def mode_scatter(args):
 
     fig.tight_layout()
 
+    # save figure
     if args.jpg :
         plt.savefig(args.prefix + ".jpg")
     else :
         plt.savefig(args.prefix + ".png")
 
-"""
-def mode_hist(args):
-    xdata, ydata = data_parser(args)
 
+def mode_hist(args):
+
+    # data input
+    if args.ydata != "-":
+        print("[WARN] If hist mode, inputed ydata is ignored", file=sys.stdout)
+    if args.xdata == "-":
+        data = data_from_pipe1()
+    else:
+        data = data_from_file(args.xdata)
+
+    # bin num
+    if args.hist_bins == 0:
+        # Sturges' rule.
+        bins = int(np.log2(len(data))) + 1
+    else:
+        bins = args.hist_bins
+    print("[INFO] number of bins : {}".format(bins))
+
+
+    # figure prepare
+    sns.set(style="darkgrid", palette="muted", color_codes=True)
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
-    ax.set_ylabel(args.ylabel)
+    if args.ylabel == "ylabel":
+        ylabel = "Frequency"
+    else:
+        ylabel = args.ylabel
+    ax.set_ylabel(ylabel)
     ax.set_title(args.title)
     ax.grid()
 
-    ax.hist(xdata, ydata)
+    if args.hist_cumulative:
+        print("[INFO] plot with cumulative ratio plot")
+        n, bins, patches = ax.hist(data, alpha = 0.7, bins = bins, label = ylabel)
+        y2 = np.add.accumulate(n) / n.sum()
+        x2 = np.convolve(bins, np.ones(2) / 2, mode="same")[1:]
+        ax2 = ax.twinx()
+        lines = ax2.plot(x2, y2, ls='--', color='r', marker='o', label='umulative ratio')
+        plt.legend(handles=[patches[0], lines[0]])
+    else:
+        print("[INFO] histogram only")
+        ax.hist(data, bins = bins)
 
     fig.tight_layout()
 
+    # save figure
     if args.jpg :
         plt.savefig(args.prefix + ".jpg")
     else :
         plt.savefig(args.prefix + ".png")
 
 
-
+"""
 def mode_bar(args):
+
+    # data input
     xdata, ydata = data_parser(args)
 
+    # figure prepare
+    sns.set(style="darkgrid", palette="muted", color_codes=True)
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
     ax.set_ylabel(args.ylabel)
@@ -99,6 +147,7 @@ def mode_bar(args):
 
     fig.tight_layout()
 
+    # save figure
     if args.jpg :
         plt.savefig(args.prefix + ".jpg")
     else :
@@ -108,6 +157,7 @@ def mode_bar(args):
 
 def data_from_pipe2(args):
 
+    print("[INFO] pipe input execute", file=sys.stdout)
     xdata = []
     ydata = []
 
@@ -122,13 +172,15 @@ def data_from_pipe2(args):
             xdata.append(float(a[0]))
             ydata.append(float(a[1].split("\n")[0]))
         except:
-            print("[ERROR] check target split character is correct")
+            print("[ERROR] check target split character is correct or number of data inputed")
             sys.exit(1)
 
     return xdata, ydata
 
 
 def data_from_pipe1():
+
+    print("[INFO] pipe input execute", file=sys.stdout)
 
     data = []
 
@@ -140,6 +192,8 @@ def data_from_pipe1():
 
 
 def data_from_file(file):
+
+    print("[INFO] file input execute", file=sys.stdout)
 
     data = []
 
@@ -178,23 +232,23 @@ if __name__ == "__main__":
 
     # mode
     if args.mode == "plot":
-        print("[INFO] plot mode ")
+        print("[INFO] plot mode ", file=sys.stdout)
         mode_plot(args)
 
     elif args.mode == "scatter":
-        print("[INFO] scatter mode")
+        print("[INFO] scatter mode", file=sys.stdout)
         mode_scatter(args)
 
     elif args.mode == "hist":
-        print("[INFO] hist mode")
+        print("[INFO] hist mode", file=sys.stdout)
         mode_hist(args)
 
     elif args.mode == "bar":
-        print("[INFO] bar mode")
+        print("[INFO] bar mode", file=sys.stdout)
         mode_bar(args)
     else :
-        print("[ERROR] mode name error")
+        print("[ERROR] mode name error", file=sys.stdout)
         sys.exit(1)
 
-    print("[INFO] tmplot.py done")
+    print("[INFO] tmplot.py done", file=sys.stdout)
 

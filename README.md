@@ -9,7 +9,7 @@ Also supports PNG, JPG output. Default output format is PNG.
 
 ## Install tmplot.py
 ~~~
-git clone https://github.com/th2ch-g/tmplot.py.git 
+git clone https://github.com/th2ch-g/tmplot.py.git
 ~~~
 
 ## Usage
