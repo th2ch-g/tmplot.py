@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 
 
 import argparse
@@ -41,6 +40,7 @@ def mode_plot(args):
     ax.set_ylabel(args.ylabel)
     ax.set_title(args.title)
     ax.grid()
+    plt.grid()
 
     ax.plot(xdata, ydata)
 
@@ -65,6 +65,7 @@ def mode_scatter(args):
     ax.set_ylabel(args.ylabel)
     ax.set_title(args.title)
     ax.grid()
+    plt.grid()
 
     ax.scatter(xdata, ydata)
 
@@ -98,6 +99,7 @@ def mode_hist(args):
 
     # figure prepare
     sns.set(style="darkgrid", palette="muted", color_codes=True)
+
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
     if args.ylabel == "y":
@@ -107,6 +109,7 @@ def mode_hist(args):
     ax.set_ylabel(ylabel)
     ax.set_title(args.title)
     ax.grid()
+    plt.grid()
 
     if args.hist_cumulative:
         print("[INFO] plot with cumulative ratio plot", file=sys.stdout)
@@ -142,6 +145,7 @@ def mode_bar(args):
     ax.set_ylabel(args.ylabel)
     ax.set_title(args.title)
     ax.grid()
+    plt.grid()
 
     ax.bar(xdata, ydata)
 
@@ -152,6 +156,7 @@ def mode_bar(args):
         plt.savefig(args.prefix + ".jpg")
     else :
         plt.savefig(args.prefix + ".png")
+
 """
 
 
@@ -220,6 +225,35 @@ def data_parser(args):
 
     else:
         return data_from_file(args.xdata), data_from_file(args.ydata)
+
+
+"""
+def data_cut(data, min_, max_):
+
+   return list(filter(lambda x: min_ <= x <= max_, data))
+
+
+def data_normalize(data):
+
+    max_ = np.max(data)
+    min_ = np.min(data)
+
+    return list(map(lambda x: (x - min_) / (max_ - min_), data))
+
+
+def data_standardize(data):
+
+    mean_ = np.mean(data)
+    std_ = np.std(data)
+
+    return list(map(lambda x: (x - mean_) / std_, data))
+
+
+
+def data_together(data, multiply):
+
+    return list(map(lambda x: x * multiply, data))
+"""
 
 
 
