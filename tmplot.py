@@ -11,12 +11,16 @@ def arg_parser():
 
     parser = argparse.ArgumentParser(description='Plotter that supports file and pipe input for quick description')
 
-    parser.add_argument("mode", help = "chose plot mode from {plot, scatter, hist, bar}", choices = ['plot', 'scatter', 'hist', 'bar'])
+    parser.add_argument("mode", help = "choose plot mode from {plot, scatter, hist, bar}", choices = ['plot', 'scatter', 'hist', 'bar'])
     parser.add_argument("-x", "--xdata", type = str, required = True, help = "x_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-x - \"")
     parser.add_argument("-y", "--ydata", type = str, required = True, help = "y_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-y - \"")
     parser.add_argument("-s", "--split", type = str, default = " ", help = "Target character for data division [default: <SPACE>]")
     parser.add_argument("--xlim", type = str, help = "plotting range. (Ex. --xlim 10-100) [default: not set]")
     parser.add_argument("--ylim", type = str, help = "plotting range. (Ex. --ylim 10-100) [default: not set]")
+    parser.add_argument("--x-norm", action = "store_true", help = "Flag whether inputed x data normalization [default: not set]")
+    parser.add_argument("--y-norm", action = "store_true", help = "Flag whether inputed y data normalization [default: not set]")
+    parser.add_argument("--x-stand", action = "store_true", help = "Flag whether inputed x data standardization [default: not set]")
+    parser.add_argument("--y-stand", action = "store_true", help = "Flag whether inputed y data standardization [default: not set]")
     parser.add_argument("--prefix", type = str, default = "out", help = "output picture file prefix. [default: out]")
     parser.add_argument("--xlabel", type = str, default = "x", help = "output picture xlabel. [default: x]")
     parser.add_argument("--ylabel", type = str, default = "y", help = "output picture ylabel. [default: y] [default(hist): Frequency]")
@@ -34,6 +38,17 @@ def mode_plot(args):
 
     # data input
     xdata, ydata = data_parser(args)
+
+    # data modify
+    if args.x_norm == True:
+        xdata = data_normalize(xdata)
+    if args.x_stand == True:
+        xdata = data_standardize(xdata)
+    if args.y_norm == True:
+        ydata = data_normalize(ydata)
+    if args.y_stand == True:
+        ydata = data_standardize(ydata)
+
 
     # figure prepare
     sns.set(style="darkgrid", palette="muted", color_codes=True)
@@ -67,6 +82,17 @@ def mode_scatter(args):
 
     # data input
     xdata, ydata = data_parser(args)
+
+    # data modify
+    if args.x_norm == True:
+        xdata = data_normalize(xdata)
+    if args.x_stand == True:
+        xdata = data_standardize(xdata)
+    if args.y_norm == True:
+        ydata = data_normalize(ydata)
+    if args.y_stand == True:
+        ydata = data_standardize(ydata)
+
 
     # figure prepare
     sns.set(style="darkgrid", palette="muted", color_codes=True)
@@ -107,6 +133,12 @@ def mode_hist(args):
     else:
         data = data_from_file(args.xdata)
 
+    # data modify
+    if args.x_norm == True:
+        data = data_normalize(data)
+    if args.x_stand == True:
+        data = data_standardize(data)
+
     # bin num
     if args.hist_bins == 0:
         # Sturges' rule.
@@ -145,7 +177,7 @@ def mode_hist(args):
         y2 = np.add.accumulate(n) / n.sum()
         x2 = np.convolve(bins, np.ones(2) / 2, mode="same")[1:]
         ax2 = ax.twinx()
-        lines = ax2.plot(x2, y2, ls='--', color='r', marker='o', label='umulative ratio')
+        lines = ax2.plot(x2, y2, ls='--', color='r', marker='o', label='cumulative ratio')
         plt.legend(handles=[patches[0], lines[0]])
     else:
         print("[INFO] histogram only", file=sys.stdout)
@@ -289,8 +321,15 @@ def data_cut(data, min_, max_):
 
    return list(filter(lambda x: min_ <= x <= max_, data))
 
+def data_together(data, multiply):
+
+    return list(map(lambda x: x * multiply, data))
+"""
+
 
 def data_normalize(data):
+
+    print("[INFO] data_normalize is called", file = sys.stdout)
 
     max_ = np.max(data)
     min_ = np.min(data)
@@ -300,6 +339,8 @@ def data_normalize(data):
 
 def data_standardize(data):
 
+    print("[INFO] data_standardize is called", file = sys.stdout)
+
     mean_ = np.mean(data)
     std_ = np.std(data)
 
@@ -307,19 +348,12 @@ def data_standardize(data):
 
 
 
-def data_together(data, multiply):
-
-    return list(map(lambda x: x * multiply, data))
-"""
-
 
 
 if __name__ == "__main__":
 
     # arg
     args = arg_parser()
-
-    print(args)
 
     # mode
     if args.mode == "plot":
