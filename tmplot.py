@@ -15,6 +15,8 @@ def arg_parser():
     parser.add_argument("-x", "--xdata", type = str, required = True, help = "x_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-x - \"")
     parser.add_argument("-y", "--ydata", type = str, required = True, help = "y_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-y - \"")
     parser.add_argument("-s", "--split", type = str, default = " ", help = "Target character for data division [default: <SPACE>]")
+    parser.add_argument("--xlim", type = str, help = "plotting range. (Ex. --xlim 10-100) [default: not set]")
+    parser.add_argument("--ylim", type = str, help = "plotting range. (Ex. --ylim 10-100) [default: not set]")
     parser.add_argument("--prefix", type = str, default = "out", help = "output picture file prefix. [default: out]")
     parser.add_argument("--xlabel", type = str, default = "x", help = "output picture xlabel. [default: x]")
     parser.add_argument("--ylabel", type = str, default = "y", help = "output picture ylabel. [default: y] [default(hist): Frequency]")
@@ -42,6 +44,14 @@ def mode_plot(args):
     ax.grid()
     plt.grid()
 
+    # data plotting range
+    if args.xlim != None:
+        xmin, xmax = range_parser(args.xlim)
+        plt.xlim(xmin, xmax)
+    if args.ylim != None:
+        ymin, ymax = range_parser(args.ylim)
+        plt.ylim(ymin, ymax)
+
     ax.plot(xdata, ydata)
 
     fig.tight_layout()
@@ -66,6 +76,15 @@ def mode_scatter(args):
     ax.set_title(args.title)
     ax.grid()
     plt.grid()
+
+    # data plotting range
+    if args.xlim != None:
+        xmin, xmax = range_parser(args.xlim)
+        plt.xlim(xmin, xmax)
+    if args.ylim != None:
+        ymin, ymax = range_parser(args.ylim)
+        plt.ylim(ymin, ymax)
+
 
     ax.scatter(xdata, ydata)
 
@@ -111,6 +130,15 @@ def mode_hist(args):
     ax.grid()
     plt.grid()
 
+    # data plotting range
+    if args.xlim != None:
+        xmin, xmax = range_parser(args.xlim)
+        plt.xlim(xmin, xmax)
+    if args.ylim != None:
+        ymin, ymax = range_parser(args.ylim)
+        plt.ylim(ymin, ymax)
+
+    # hist plot
     if args.hist_cumulative:
         print("[INFO] plot with cumulative ratio plot", file=sys.stdout)
         n, bins, patches = ax.hist(data, alpha = 0.7, bins = bins, label = ylabel)
@@ -158,6 +186,35 @@ def mode_bar(args):
         plt.savefig(args.prefix + ".png")
 
 """
+
+
+def range_parser(lim_range):
+
+    print("[INFO] plotting range parser is called", file = sys.stdout)
+
+    if "-" not in lim_range:
+        print("[ERROR] plotting range parser error, not include \"-\"", file = sys.stderr)
+        print("[ERROR] For --xlim or --ylim, use \"10-100\" as example", file = sys.stderr)
+        sys.exit(1)
+
+    lim_range_list = lim_range.split("-")
+
+    if len(lim_range_list) != 2:
+        print("[ERROR] plotting range parser error, seems to be not include number", file = sys.stderr)
+        print("[ERROR] For --xlim or --ylim, use \"10-100\" as example", file = sys.stderr)
+        sys.exit(1)
+
+    min_ = float(lim_range_list[0])
+    max_ = float(lim_range_list[1].split("\n")[0])
+
+    if min_ >= max_ :
+        print("[ERROR] range must be A < B, if input string is \"A-B\"", file = sys.stderr)
+        print("[ERROR] For --xlim or --ylim, use \"10-100\" as example", file = sys.stderr)
+        sys.exit(1)
+
+    print("[INFO] plotting range parser normally terminated", file = sys.stdout)
+
+    return min_, max_
 
 
 def data_from_pipe2(args):
