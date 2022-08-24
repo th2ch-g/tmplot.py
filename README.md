@@ -10,8 +10,8 @@ Also supports PNG, JPG output. Default output format is PNG.
 ## Install tmplot.py
 ~~~
 git clone https://github.com/th2ch-g/tmplot.py.git && \
-    cd tmplot.py && \
-    sed -e "1i#\!$(which python3)" -i tmplot.py
+cd tmplot.py && \
+sed -e "1i#\!$(which python3)" -i tmplot.py
 ~~~
 
 

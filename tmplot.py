@@ -9,23 +9,33 @@ import seaborn as sns
 
 def arg_parser():
 
+    # parser object
     parser = argparse.ArgumentParser(description='Plotter that supports file and pipe input for quick description')
 
+    # mode option
     parser.add_argument("mode", help = "choose plot mode from {plot, scatter, hist, bar}", choices = ['plot', 'scatter', 'hist', 'bar'])
+
+    # basic data option
     parser.add_argument("-x", "--xdata", type = str, required = True, help = "x_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-x - \"")
     parser.add_argument("-y", "--ydata", type = str, required = True, help = "y_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-y - \"")
     parser.add_argument("-s", "--split", type = str, default = " ", help = "Target character for data division [default: <SPACE>]")
+
+    # inputed data optioin
     parser.add_argument("--xlim", type = str, help = "plotting range. (Ex. --xlim 10-100) [default: not set]")
     parser.add_argument("--ylim", type = str, help = "plotting range. (Ex. --ylim 10-100) [default: not set]")
     parser.add_argument("--x-norm", action = "store_true", help = "Flag whether inputed x data normalization [default: not set]")
     parser.add_argument("--y-norm", action = "store_true", help = "Flag whether inputed y data normalization [default: not set]")
     parser.add_argument("--x-stand", action = "store_true", help = "Flag whether inputed x data standardization [default: not set]")
     parser.add_argument("--y-stand", action = "store_true", help = "Flag whether inputed y data standardization [default: not set]")
+
+    # output picture option
     parser.add_argument("--prefix", type = str, default = "out", help = "output picture file prefix. [default: out]")
     parser.add_argument("--xlabel", type = str, default = "x", help = "output picture xlabel. [default: x]")
     parser.add_argument("--ylabel", type = str, default = "y", help = "output picture ylabel. [default: y] [default(hist): Frequency]")
     parser.add_argument("--title", type = str, default = " ", help = "output picture title. [default: <NONE>]")
     parser.add_argument("--jpg", action = 'store_true', help = "Flag whether JPG output is performed. [default: <PREFIX>.png]")
+
+    # mode specific option
     parser.add_argument("--hist-bins", type = int, default = 0, help = "number of bins in hist mode. [default: auto]")
     parser.add_argument("--hist-cumulative", action = "store_true", help = "Flag whether plot cumulative ratio with histogram")
 
