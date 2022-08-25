@@ -37,25 +37,31 @@ sed -e "1i#\!$(which python3)" -i tmplot.py
 
 <a id="anchor5"></a>
 ## Support function & Usage
-|                                  | Supports / Unsupports  | Usage example                                      |
-| -------------------------------- | ---------------------- | -------------------------------------------------- |
-| FILE input                       | O                      | tmplot.py -x test1.txt -y test2.txt                |
-| PIPE input                       | O                      | cat test.txt &#124; tmplot.py plot -x - -y -       |
-| PNG output                       | O                      | default output                                     |
-| JPG output                       | O                      | cat test.txt &#124; tmplot.py plot -x - -y - --jpg |
-| set picture title                | O                      | --title <TITLE>                                    |
-| set picture xlabel               | O                      | --xlabel <XLABEL>                                  |
-| set picture ylabel               | O                      | --ylabel <YLABEL>                                  |
-| set output picture prefix        | O                      | --prefix <PREFIX>                                  |
-| Plot with connecting the dots    | O                      | cat test.txt &#124; tmplot.py plot -x - -y -       |
-| Plot without connecting the dots | O                      | cat test.txt &#124; tmplot.py scatter -x - -y -    |
-| Draw a histogram                 | O                      | cat test.txt &#124; tmplot.py hist -x - -y -       |
-| Draw a barplot                   | X( O int the feature ) |                                                    |
-| sort inputed data                | X                      | use: sort command                                  |
-| normalize inputed data           | O                      | --xnorm, --ynorm                                   |
-| standardize inputed data         | O                      | --xstand, --ystand                                 |
-
-
+|                                                  | Support / Unsupport   | Usage example                                      |
+| ------------------------------------------------ | --------------------- | -------------------------------------------------- |
+| FILE input                                       | O                     | tmplot.py -x test1.txt -y test2.txt                |
+| PIPE input                                       | O                     | cat test.txt &#124; tmplot.py plot -x - -y -       |
+| PNG output                                       | O                     | default output                                     |
+| JPG output                                       | O                     | cat test.txt &#124; tmplot.py plot -x - -y - --jpg |
+| delimiter characters in PIPE input               | O                     | -s / --split  "\t"                                 |
+| Specify input data type in xdata                 | X(O in the future)    |                                                    |
+| Specify input data type in ydata                 | X(O in the future)    |                                                    |
+| set picture title                                | O                     | --title <TITLE>                                    |
+| set picture xlabel                               | O                     | --xlabel <XLABEL>                                  |
+| set picture ylabel                               | O                     | --ylabel <YLABEL>                                  |
+| set output picture prefix                        | O                     | --prefix <PREFIX>                                  |
+| Plot with connecting the dots                    | O                     | cat test.txt &#124; tmplot.py plot -x - -y -       |
+| Plot without connecting the dots                 | O                     | cat test.txt &#124; tmplot.py scatter -x - -y -    |
+| Draw a histogram                                 | O                     | cat test.txt &#124; tmplot.py hist -x - -y -       |
+| Draw a barplot                                   | X( O in the feature ) |                                                    |
+| sort input data                                  | X                     | use: sort command                                  |
+| normalize input data                             | O                     | --xnorm, --ynorm                                   |
+| standardize input data                           | O                     | --xstand, --ystand                                 |
+| Drawing range on x-axis                          | O                     | --xlim [1:10]                                      |
+| Drawing range on y-axis                          | O                     | --ylim [1:10]                                      |
+| Cut off input data at maximum and minimum values | X                     | use: --xlim or --ylim                              |
+| Perform the same process on all input data.      | X                     | use: awk '{print $1* 2, $2 + 10}'                  |
+|                                                  |                       |                                                    |
 
 <a id="anchor6"></a>
 ## Other tmplot

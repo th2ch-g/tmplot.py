@@ -72,7 +72,7 @@ def mode_plot(args):
 
 
     # figure prepare
-    sns.set(style="darkgrid", palette="muted", color_codes=True)
+    sns.set(style = "darkgrid", palette = "muted", color_codes = True)
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
     ax.set_ylabel(args.ylabel)
@@ -116,7 +116,7 @@ def mode_scatter(args):
 
 
     # figure prepare
-    sns.set(style="darkgrid", palette="muted", color_codes=True)
+    sns.set(style = "darkgrid", palette = "muted", color_codes = True)
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
     ax.set_ylabel(args.ylabel)
@@ -148,7 +148,7 @@ def mode_hist(args):
 
     # data input
     if args.ydata != "-":
-        print("[WARN] If hist mode, inputed ydata is ignored", file=sys.stdout)
+        print("[WARN] If hist mode, inputed ydata is ignored", file = sys.stdout)
     if args.xdata == "-":
         data = data_from_pipe1()
     else:
@@ -166,11 +166,11 @@ def mode_hist(args):
         bins = int(np.log2(len(data))) + 1
     else:
         bins = args.hist_bins
-    print("[INFO] number of bins : {}".format(bins), file=sys.stdout)
+    print("[INFO] number of bins : {}".format(bins), file = sys.stdout)
 
 
     # figure prepare
-    sns.set(style="darkgrid", palette="muted", color_codes=True)
+    sns.set(style = "darkgrid", palette = "muted", color_codes = True)
 
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
@@ -193,15 +193,15 @@ def mode_hist(args):
 
     # hist plot
     if args.hist_cumulative:
-        print("[INFO] plot with cumulative ratio plot", file=sys.stdout)
+        print("[INFO] plot with cumulative ratio plot", file = sys.stdout)
         n, bins, patches = ax.hist(data, alpha = 0.7, bins = bins, label = ylabel)
         y2 = np.add.accumulate(n) / n.sum()
         x2 = np.convolve(bins, np.ones(2) / 2, mode="same")[1:]
         ax2 = ax.twinx()
-        lines = ax2.plot(x2, y2, ls='--', color='r', marker='o', label='cumulative ratio')
+        lines = ax2.plot(x2, y2, ls = '--', color = 'r', marker = 'o', label = 'cumulative ratio')
         plt.legend(handles=[patches[0], lines[0]])
     else:
-        print("[INFO] histogram only", file=sys.stdout)
+        print("[INFO] histogram only", file = sys.stdout)
         ax.hist(data, bins = bins)
 
     fig.tight_layout()
@@ -215,29 +215,7 @@ def mode_hist(args):
 
 """
 def mode_bar(args):
-
-    # data input
-    xdata, ydata = data_parser(args)
-
-    # figure prepare
-    sns.set(style="darkgrid", palette="muted", color_codes=True)
-    fig, ax = plt.subplots()
-    ax.set_xlabel(args.xlabel)
-    ax.set_ylabel(args.ylabel)
-    ax.set_title(args.title)
-    ax.grid()
-    plt.grid()
-
-    ax.bar(xdata, ydata)
-
-    fig.tight_layout()
-
-    # save figure
-    if args.jpg :
-        plt.savefig(args.prefix + ".jpg")
-    else :
-        plt.savefig(args.prefix + ".png")
-
+    pass
 """
 
 
@@ -275,7 +253,7 @@ def range_parser(lim_range):
     max_ = float(lim_range_list[1].split("\n")[0])
 
     if min_ >= max_ :
-        print("[ERROR] range must be A < B, if input string is \"A-B\"", file = sys.stderr)
+        print("[ERROR] range must be A < B, if input string is \"[A:B]\"", file = sys.stderr)
         print("[ERROR] For --xlim or --ylim, use \"[10:100]\" as example", file = sys.stderr)
         sys.exit(1)
 
@@ -286,7 +264,7 @@ def range_parser(lim_range):
 
 def data_from_pipe2(args):
 
-    print("[INFO] pipe input execute", file=sys.stdout)
+    print("[INFO] 2 pipe input execute", file = sys.stdout)
     xdata = []
     ydata = []
 
@@ -301,7 +279,7 @@ def data_from_pipe2(args):
             xdata.append(float(a[0]))
             ydata.append(float(a[1].split("\n")[0]))
         except:
-            print("[ERROR] check target split character is correct or number of data inputed", file=sys.stderr)
+            print("[ERROR] check target split character is correct or number of data inputed", file = sys.stderr)
             sys.exit(1)
 
     return xdata, ydata
@@ -309,7 +287,7 @@ def data_from_pipe2(args):
 
 def data_from_pipe1():
 
-    print("[INFO] pipe input execute", file=sys.stdout)
+    print("[INFO] 1 pipe input execute", file = sys.stdout)
 
     data = []
 
@@ -322,7 +300,7 @@ def data_from_pipe1():
 
 def data_from_file(file):
 
-    print("[INFO] file input execute", file=sys.stdout)
+    print("[INFO] file input execute", file = sys.stdout)
 
     data = []
 
@@ -392,23 +370,23 @@ if __name__ == "__main__":
 
     # mode
     if args.mode == "plot":
-        print("[INFO] plot mode ", file=sys.stdout)
+        print("[INFO] plot mode ", file = sys.stdout)
         mode_plot(args)
 
     elif args.mode == "scatter":
-        print("[INFO] scatter mode", file=sys.stdout)
+        print("[INFO] scatter mode", file = sys.stdout)
         mode_scatter(args)
 
     elif args.mode == "hist":
-        print("[INFO] hist mode", file=sys.stdout)
+        print("[INFO] hist mode", file = sys.stdout)
         mode_hist(args)
 
     elif args.mode == "bar":
-        print("[INFO] bar mode", file=sys.stdout)
+        print("[INFO] bar mode", file = sys.stdout)
         mode_bar(args)
     else :
-        print("[ERROR] mode name error", file=sys.stderr)
+        print("[ERROR] mode name error", file = sys.stderr)
         sys.exit(1)
 
-    print("[INFO] tmplot.py done", file=sys.stdout)
+    print("[INFO] tmplot.py done", file = sys.stdout)
 
