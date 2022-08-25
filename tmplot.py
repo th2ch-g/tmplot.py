@@ -1,10 +1,21 @@
 
 
+"""
+name = tmplot.py
+repository = https://github.com/th2ch-g/tmplot.py
+author = ["th 2022"]
+version = 0.1.0 (under developmen)
+LICENSE = MIT-LICENSE
+"""
+
+
+
 import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import seaborn as sns
+
 
 
 def arg_parser():
@@ -21,12 +32,12 @@ def arg_parser():
     parser.add_argument("-s", "--split", type = str, default = " ", help = "Target character for data division [default: <SPACE>]")
 
     # inputed data optioin
-    parser.add_argument("--xlim", type = str, help = "plotting range. (Ex. --xlim 10-100) [default: not set]")
-    parser.add_argument("--ylim", type = str, help = "plotting range. (Ex. --ylim 10-100) [default: not set]")
-    parser.add_argument("--x-norm", action = "store_true", help = "Flag whether inputed x data normalization [default: not set]")
-    parser.add_argument("--y-norm", action = "store_true", help = "Flag whether inputed y data normalization [default: not set]")
-    parser.add_argument("--x-stand", action = "store_true", help = "Flag whether inputed x data standardization [default: not set]")
-    parser.add_argument("--y-stand", action = "store_true", help = "Flag whether inputed y data standardization [default: not set]")
+    parser.add_argument("--xlim", type = str, help = "plotting range. input data type must be INT or FLOAT (Ex. --xlim [10:100]) [default: not set]")
+    parser.add_argument("--ylim", type = str, help = "plotting range. input data type must be INT or FLOAT (Ex. --ylim [10:100]) [default: not set]")
+    parser.add_argument("--xnorm", action = "store_true", help = "Flag whether inputed x data normalization [default: not set]")
+    parser.add_argument("--ynorm", action = "store_true", help = "Flag whether inputed y data normalization [default: not set]")
+    parser.add_argument("--xstand", action = "store_true", help = "Flag whether inputed x data standardization [default: not set]")
+    parser.add_argument("--ystand", action = "store_true", help = "Flag whether inputed y data standardization [default: not set]")
 
     # output picture option
     parser.add_argument("--prefix", type = str, default = "out", help = "output picture file prefix. [default: out]")
@@ -50,13 +61,13 @@ def mode_plot(args):
     xdata, ydata = data_parser(args)
 
     # data modify
-    if args.x_norm == True:
+    if args.xnorm == True:
         xdata = data_normalize(xdata)
-    if args.x_stand == True:
+    if args.xstand == True:
         xdata = data_standardize(xdata)
-    if args.y_norm == True:
+    if args.ynorm == True:
         ydata = data_normalize(ydata)
-    if args.y_stand == True:
+    if args.ystand == True:
         ydata = data_standardize(ydata)
 
 
@@ -94,13 +105,13 @@ def mode_scatter(args):
     xdata, ydata = data_parser(args)
 
     # data modify
-    if args.x_norm == True:
+    if args.xnorm == True:
         xdata = data_normalize(xdata)
-    if args.x_stand == True:
+    if args.xstand == True:
         xdata = data_standardize(xdata)
-    if args.y_norm == True:
+    if args.ynorm == True:
         ydata = data_normalize(ydata)
-    if args.y_stand == True:
+    if args.ystand == True:
         ydata = data_standardize(ydata)
 
 
@@ -144,9 +155,9 @@ def mode_hist(args):
         data = data_from_file(args.xdata)
 
     # data modify
-    if args.x_norm == True:
+    if args.xnorm == True:
         data = data_normalize(data)
-    if args.x_stand == True:
+    if args.xstand == True:
         data = data_standardize(data)
 
     # bin num
@@ -234,16 +245,30 @@ def range_parser(lim_range):
 
     print("[INFO] plotting range parser is called", file = sys.stdout)
 
-    if "-" not in lim_range:
-        print("[ERROR] plotting range parser error, not include \"-\"", file = sys.stderr)
-        print("[ERROR] For --xlim or --ylim, use \"10-100\" as example", file = sys.stderr)
+    if "=" not in lim_range:
+        print("[ERROR] plotting range parser error, not include \"=\"", file = sys.stderr)
+        print("[ERROR] For --xlim or --ylim, use \"[10:100]\" as example", file = sys.stderr)
         sys.exit(1)
 
-    lim_range_list = lim_range.split("-")
+
+    if "[" not in lim_range:
+        print("[ERROR] plotting range parser error, not include \"[\"", file = sys.stderr)
+        print("[ERROR] For --xlim or --ylim, use \"[10:100]\" as example", file = sys.stderr)
+        sys.exit(1)
+
+
+    if "]" not in lim_range:
+        print("[ERROR] plotting range parser error, not include \"]\"", file = sys.stderr)
+        print("[ERROR] For --xlim or --ylim, use \"[10:100]\" as example", file = sys.stderr)
+        sys.exit(1)
+
+
+    lim_range = lim_range.lstrip("[").rstrip("]")
+    lim_range_list = lim_range.split("=")
 
     if len(lim_range_list) != 2:
         print("[ERROR] plotting range parser error, seems to be not include number", file = sys.stderr)
-        print("[ERROR] For --xlim or --ylim, use \"10-100\" as example", file = sys.stderr)
+        print("[ERROR] For --xlim or --ylim, use \"[10:100]\" as example", file = sys.stderr)
         sys.exit(1)
 
     min_ = float(lim_range_list[0])
@@ -251,7 +276,7 @@ def range_parser(lim_range):
 
     if min_ >= max_ :
         print("[ERROR] range must be A < B, if input string is \"A-B\"", file = sys.stderr)
-        print("[ERROR] For --xlim or --ylim, use \"10-100\" as example", file = sys.stderr)
+        print("[ERROR] For --xlim or --ylim, use \"[10:100]\" as example", file = sys.stderr)
         sys.exit(1)
 
     print("[INFO] plotting range parser normally terminated", file = sys.stdout)
