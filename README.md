@@ -37,6 +37,7 @@ sed -e "1i#\!$(which python3)" -i tmplot.py
 
 <a id="anchor5"></a>
 ## Support function & Usage
+
 |                                                  | Support / Unsupport   | Usage example                                      |
 | ------------------------------------------------ | --------------------- | -------------------------------------------------- |
 | FILE input                                       | O                     | tmplot.py -x test1.txt -y test2.txt                |
@@ -46,10 +47,10 @@ sed -e "1i#\!$(which python3)" -i tmplot.py
 | delimiter characters in PIPE input               | O                     | -s / --split  "\t"                                 |
 | Specify input data type in xdata                 | X(O in the future)    |                                                    |
 | Specify input data type in ydata                 | X(O in the future)    |                                                    |
-| set picture title                                | O                     | --title <TITLE>                                    |
-| set picture xlabel                               | O                     | --xlabel <XLABEL>                                  |
-| set picture ylabel                               | O                     | --ylabel <YLABEL>                                  |
-| set output picture prefix                        | O                     | --prefix <PREFIX>                                  |
+| set picture title                                | O                     | --title title                                      |
+| set picture xlabel                               | O                     | --xlabel xlabel                                    |
+| set picture ylabel                               | O                     | --ylabel ylabel                                    |
+| set output picture prefix                        | O                     | --prefix prefix                                    |
 | Plot with connecting the dots                    | O                     | cat test.txt &#124; tmplot.py plot -x - -y -       |
 | Plot without connecting the dots                 | O                     | cat test.txt &#124; tmplot.py scatter -x - -y -    |
 | Draw a histogram                                 | O                     | cat test.txt &#124; tmplot.py hist -x - -y -       |
@@ -62,6 +63,7 @@ sed -e "1i#\!$(which python3)" -i tmplot.py
 | Cut off input data at maximum and minimum values | X                     | use: --xlim or --ylim                              |
 | Perform the same process on all input data.      | X                     | use: awk '{print $1* 2, $2 + 10}'                  |
 |                                                  |                       |                                                    |
+
 
 <a id="anchor6"></a>
 ## Other tmplot
