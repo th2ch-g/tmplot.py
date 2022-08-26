@@ -18,6 +18,14 @@ cd tmplot.py && \
 sed -e "1i#\!$(which python3)" -i tmplot.py
 ~~~
 
+### dependencies
+- python3 (>=3.9.12 tested)
+    - matplotlib
+    - seaborn
+    - numpy
+    - argsparse
+    - sys
+
 
 <a id="anchor2"></a>
 # Gallery

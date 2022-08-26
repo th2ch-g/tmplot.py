@@ -21,45 +21,71 @@ import seaborn as sns
 def arg_parser():
 
     # parser object
-    parser = argparse.ArgumentParser(description = 'Plotter that supports file and pipe input for quick description')
+    parser = argparse.ArgumentParser(description = 'Plotter that supports file and pipe input for quick description',
+            formatter_class = argparse.RawTextHelpFormatter)
 
     # mode option
-    parser.add_argument("mode", help = "choose plot mode from {plot, scatter, hist, bar}", choices = ['plot', 'scatter', 'hist', 'bar', 'violin', 'box', 'circle'])
+    parser.add_argument("mode", choices = ['plot', 'scatter', 'hist', 'bar', 'violin', 'box', 'circle'],
+            help = "choose plot mode")
 
     # basic data option
-    parser.add_argument("-x", "--xdata", type = str, required = True, help = "x_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-x - \"")
-    parser.add_argument("-y", "--ydata", type = str, required = True, help = "y_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-y - \"")
-    parser.add_argument("-s", "--split", type = str, default = " ", help = "Target character for data division [default: <SPACE>]")
-    parser.add_argument("--xtype", type = str, default = "float", help = "Input x data type specification [default: float]", choices = ["float", "int", "str"])
-    parser.add_argument("--ytype", type = str, default = "float", help = "Input y data type specification [default: float]", choices = ["float", "int", "str"])
+    parser.add_argument("-x", "--xdata", type = str, required = True,
+            help = "x_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-x - \"")
+    parser.add_argument("-y", "--ydata", type = str, required = True,
+            help = "y_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-y - \"")
+    parser.add_argument("-s", "--split", type = str, default = " ",
+            help = "Target character for data division [default: <SPACE>]")
+    parser.add_argument("--xtype", type = str, default = "float",
+            help = "Input x data type specification [default: float]", choices = ["float", "int", "str"])
+    parser.add_argument("--ytype", type = str, default = "float",
+            help = "Input y data type specification [default: float]", choices = ["float", "int", "str"])
 
     # plot option
-    parser.add_argument("--xlim", type = str, help = "plotting range. input data type must be INT or FLOAT (Ex. --xlim \"[10:100]\") [default: not set]")
-    parser.add_argument("--ylim", type = str, help = "plotting range. input data type must be INT or FLOAT (Ex. --ylim \"[10:100]\") [default: not set]")
-    parser.add_argument("--xlog", action = "store_true", help = "Flag whether the x-axis should be log scaled")
-    parser.add_argument("--ylog", action = "store_true", help = "Flag whether the y-axis should be log scaled")
-    parser.add_argument("--xline", type = float, help = "Draw a vertical line where the x-axis is (Ex. --xline 10) [default: not set]")
-    parser.add_argument("--yline", type = float, help = "Draw a vertical line where the y-axis is (Ex. --yline 10) [default: not set]")
+    parser.add_argument("--xlim", type = str,
+            help = "plotting range. input data type must be int or float (Ex. --xlim \"[10:100]\") [default: not set]")
+    parser.add_argument("--ylim", type = str,
+            help = "plotting range. input data type must be int or float (Ex. --ylim \"[10:100]\") [default: not set]")
+    parser.add_argument("--xlog", action = "store_true",
+            help = "Flag whether the x-axis should be log scaled")
+    parser.add_argument("--ylog", action = "store_true",
+            help = "Flag whether the y-axis should be log scaled")
+    parser.add_argument("--xline", type = float,
+            help = "Draw a vertical line where the x-axis is (Ex. --xline 10) [default: not set]")
+    parser.add_argument("--yline", type = float,
+            help = "Draw a vertical line where the y-axis is (Ex. --yline 10) [default: not set]")
 
     # input data option
-    parser.add_argument("--xnorm", action = "store_true", help = "Flag whether inputed x data normalization")
-    parser.add_argument("--ynorm", action = "store_true", help = "Flag whether inputed y data normalization")
-    parser.add_argument("--xstand", action = "store_true", help = "Flag whether inputed x data standardization")
-    parser.add_argument("--ystand", action = "store_true", help = "Flag whether inputed y data standardization")
+    parser.add_argument("--xnorm", action = "store_true",
+            help = "Flag whether inputed x data normalization")
+    parser.add_argument("--ynorm", action = "store_true",
+            help = "Flag whether inputed y data normalization")
+    parser.add_argument("--xstand", action = "store_true",
+            help = "Flag whether inputed x data standardization")
+    parser.add_argument("--ystand", action = "store_true",
+            help = "Flag whether inputed y data standardization")
 
     # output picture option
-    parser.add_argument("--prefix", type = str, default = "out", help = "output picture file prefix. [default: out]")
-    parser.add_argument("--xlabel", type = str, default = "x", help = "output picture xlabel. [default: x]")
-    parser.add_argument("--ylabel", type = str, default = "y", help = "output picture ylabel. [default: y] [default(hist): Frequency]")
-    parser.add_argument("--title", type = str, default = " ", help = "output picture title. [default: <NONE>]")
+    parser.add_argument("--prefix", type = str, default = "out",
+            help = "output picture file prefix. [default: out]")
+    parser.add_argument("--xlabel", type = str, default = "x",
+            help = "output picture xlabel. [default: x]")
+    parser.add_argument("--ylabel", type = str, default = "y",
+            help = "output picture ylabel. [default: y] [default(hist): Frequency]")
+    parser.add_argument("--title", type = str, default = " ",
+            help = "output picture title. [default: <NONE>]")
     parser.add_argument("--jpg", action = 'store_true', help = "Flag whether JPG output is performed. [default: <PREFIX>.png]")
     parser.add_argument("--transparent", action = "store_true", help = "Flag whether make the background of the output image transparent")
     parser.add_argument("--seaborn-off", action = "store_true", help = "Flag whether seaborn theme off")
 
     # mode specific option
-    parser.add_argument("--hist-bins", type = int, default = 0, help = "number of bins in hist mode. [default: auto]")
-    parser.add_argument("--hist-cumulative", action = "store_true", help = "Flag whether plot cumulative ratio with histogram")
-    parser.add_argument("--hist-peak-highlight", action = "store_true", help = "Flag whether the major peaks of the histogram are drawn as vertical lines")
+    parser.add_argument("--hist-bins-width", type = float, default = 0,
+            help = "value of histogram bin width. (Ex. --hist-bins-width 0.7) [default: auto]\n[CAUTION] If combined with --hist-bins, --hist-bins-width takes precedence.")
+    parser.add_argument("--hist-bins", type = int, default = 0,
+            help = "number of bins in hist mode. (Ex. --hist-bins 60) [default: auto]\n[CAUTION] If combined with --hist-bins-width, --hist-bins-width takes precedence.")
+    parser.add_argument("--hist-cumulative", action = "store_true",
+            help = "Flag whether plot cumulative ratio with histogram")
+    parser.add_argument("--hist-peak-highlight", action = "store_true",
+            help = "Flag whether the major peaks of the histogram are drawn as vertical lines")
 
 
     return parser.parse_args()
