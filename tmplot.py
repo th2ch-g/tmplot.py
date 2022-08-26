@@ -4,7 +4,7 @@
 name = tmplot.py
 repository = https://github.com/th2ch-g/tmplot.py
 author = ["th 2022"]
-version = 0.1.0 (under developmen)
+version = 0.1.0 (under development)
 LICENSE = MIT-LICENSE
 """
 
@@ -21,23 +21,31 @@ import seaborn as sns
 def arg_parser():
 
     # parser object
-    parser = argparse.ArgumentParser(description='Plotter that supports file and pipe input for quick description')
+    parser = argparse.ArgumentParser(description = 'Plotter that supports file and pipe input for quick description')
 
     # mode option
-    parser.add_argument("mode", help = "choose plot mode from {plot, scatter, hist, bar}", choices = ['plot', 'scatter', 'hist', 'bar'])
+    parser.add_argument("mode", help = "choose plot mode from {plot, scatter, hist, bar}", choices = ['plot', 'scatter', 'hist', 'bar', 'violin', 'box', 'circle'])
 
     # basic data option
     parser.add_argument("-x", "--xdata", type = str, required = True, help = "x_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-x - \"")
     parser.add_argument("-y", "--ydata", type = str, required = True, help = "y_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-y - \"")
     parser.add_argument("-s", "--split", type = str, default = " ", help = "Target character for data division [default: <SPACE>]")
+    parser.add_argument("--xtype", type = str, default = "float", help = "Input x data type specification [default: float]", choices = ["float", "int", "str"])
+    parser.add_argument("--ytype", type = str, default = "float", help = "Input y data type specification [default: float]", choices = ["float", "int", "str"])
 
-    # inputed data optioin
-    parser.add_argument("--xlim", type = str, help = "plotting range. input data type must be INT or FLOAT (Ex. --xlim [10:100]) [default: not set]")
-    parser.add_argument("--ylim", type = str, help = "plotting range. input data type must be INT or FLOAT (Ex. --ylim [10:100]) [default: not set]")
-    parser.add_argument("--xnorm", action = "store_true", help = "Flag whether inputed x data normalization [default: not set]")
-    parser.add_argument("--ynorm", action = "store_true", help = "Flag whether inputed y data normalization [default: not set]")
-    parser.add_argument("--xstand", action = "store_true", help = "Flag whether inputed x data standardization [default: not set]")
-    parser.add_argument("--ystand", action = "store_true", help = "Flag whether inputed y data standardization [default: not set]")
+    # plot option
+    parser.add_argument("--xlim", type = str, help = "plotting range. input data type must be INT or FLOAT (Ex. --xlim \"[10:100]\") [default: not set]")
+    parser.add_argument("--ylim", type = str, help = "plotting range. input data type must be INT or FLOAT (Ex. --ylim \"[10:100]\") [default: not set]")
+    parser.add_argument("--xlog", action = "store_true", help = "Flag whether the x-axis should be log scaled")
+    parser.add_argument("--ylog", action = "store_true", help = "Flag whether the y-axis should be log scaled")
+    parser.add_argument("--xline", type = float, help = "Draw a vertical line where the x-axis is (Ex. --xline 10) [default: not set]")
+    parser.add_argument("--yline", type = float, help = "Draw a vertical line where the y-axis is (Ex. --yline 10) [default: not set]")
+
+    # input data option
+    parser.add_argument("--xnorm", action = "store_true", help = "Flag whether inputed x data normalization")
+    parser.add_argument("--ynorm", action = "store_true", help = "Flag whether inputed y data normalization")
+    parser.add_argument("--xstand", action = "store_true", help = "Flag whether inputed x data standardization")
+    parser.add_argument("--ystand", action = "store_true", help = "Flag whether inputed y data standardization")
 
     # output picture option
     parser.add_argument("--prefix", type = str, default = "out", help = "output picture file prefix. [default: out]")
@@ -45,10 +53,13 @@ def arg_parser():
     parser.add_argument("--ylabel", type = str, default = "y", help = "output picture ylabel. [default: y] [default(hist): Frequency]")
     parser.add_argument("--title", type = str, default = " ", help = "output picture title. [default: <NONE>]")
     parser.add_argument("--jpg", action = 'store_true', help = "Flag whether JPG output is performed. [default: <PREFIX>.png]")
+    parser.add_argument("--transparent", action = "store_true", help = "Flag whether make the background of the output image transparent")
+    parser.add_argument("--seaborn-off", action = "store_true", help = "Flag whether seaborn theme off")
 
     # mode specific option
     parser.add_argument("--hist-bins", type = int, default = 0, help = "number of bins in hist mode. [default: auto]")
     parser.add_argument("--hist-cumulative", action = "store_true", help = "Flag whether plot cumulative ratio with histogram")
+    parser.add_argument("--hist-peak-highlight", action = "store_true", help = "Flag whether the major peaks of the histogram are drawn as vertical lines")
 
 
     return parser.parse_args()
@@ -163,7 +174,11 @@ def mode_hist(args):
     # bin num
     if args.hist_bins == 0:
         # Sturges' rule.
-        bins = int(np.log2(len(data))) + 1
+        #bins = int(np.log2(len(data))) + 1
+        # Freedman–Diaconis' choice
+        q75, q25 = np.percentile(data, [75 ,25])
+        iqr = q75 - q25
+        bins = int(2 * iqr / pow(len(data), 1/3))
     else:
         bins = args.hist_bins
     print("[INFO] number of bins : {}".format(bins), file = sys.stdout)
@@ -223,8 +238,8 @@ def range_parser(lim_range):
 
     print("[INFO] plotting range parser is called", file = sys.stdout)
 
-    if "=" not in lim_range:
-        print("[ERROR] plotting range parser error, not include \"=\"", file = sys.stderr)
+    if ":" not in lim_range:
+        print("[ERROR] plotting range parser error, not include \":\"", file = sys.stderr)
         print("[ERROR] For --xlim or --ylim, use \"[10:100]\" as example", file = sys.stderr)
         sys.exit(1)
 
@@ -242,7 +257,7 @@ def range_parser(lim_range):
 
 
     lim_range = lim_range.lstrip("[").rstrip("]")
-    lim_range_list = lim_range.split("=")
+    lim_range_list = lim_range.split(":")
 
     if len(lim_range_list) != 2:
         print("[ERROR] plotting range parser error, seems to be not include number", file = sys.stderr)

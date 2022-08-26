@@ -2,7 +2,7 @@
 
 Plotter for when you just want to draw a little diagram.
 
-1. [Install tmplo.py](#anchor1)
+1. [Install tmplot.py](#anchor1)
 1. [Gallery](#anchor2)
 1. [Quick start](#anchor3)
 1. [Mode & Options](#anchor4)
@@ -61,7 +61,7 @@ sed -e "1i#\!$(which python3)" -i tmplot.py
 | Drawing range on x-axis                          | O                     | --xlim [1:10]                                      |
 | Drawing range on y-axis                          | O                     | --ylim [1:10]                                      |
 | Cut off input data at maximum and minimum values | X                     | use: --xlim or --ylim                              |
-| Perform the same process on all input data.      | X                     | use: awk '{print $1* 2, $2 + 10}'                  |
+| Perform the same process on all input data.      | X                     | use: awk '{print $1 * 2, $2 + 10}'                 |
 |                                                  |                       |                                                    |
 
 
