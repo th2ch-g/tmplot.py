@@ -23,7 +23,7 @@ sed -e "1i#\!$(which python3)" -i tmplot.py
     - matplotlib
     - seaborn
     - numpy
-    - argsparse
+    - argparse
     - sys
 
 

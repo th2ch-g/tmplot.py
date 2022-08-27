@@ -76,8 +76,10 @@ def arg_parser():
     parser.add_argument("--jpg", action = 'store_true', help = "Flag whether JPG output is performed. [default: <PREFIX>.png]")
     parser.add_argument("--transparent", action = "store_true", help = "Flag whether make the background of the output image transparent")
     parser.add_argument("--seaborn-off", action = "store_true", help = "Flag whether seaborn theme off")
+    parser.add_argument("--grid-off", action = "store_true", help = "Flag whether turn off grid")
 
     # mode specific option
+    # hist mode option
     parser.add_argument("--hist-bins-width", type = float, default = 0,
             help = "value of histogram bin width. (Ex. --hist-bins-width 0.7) [default: auto]\n[CAUTION] If combined with --hist-bins, --hist-bins-width takes precedence.")
     parser.add_argument("--hist-bins", type = int, default = 0,
@@ -92,10 +94,34 @@ def arg_parser():
 
 
 
-def mode_plot(args):
+def common_plotter(args):
 
     # data input
-    xdata, ydata = data_parser(args)
+    if args.mode == "plot" or args.mode == "scatter":
+        xdata, ydata = data_parser(args)
+
+    elif args.mode == "hist":
+        if args.ydata != "-":
+            print("[WARN] If hist mode, inputed ydata is ignored", file = sys.stdout)
+        if args.xdata == "-":
+            xdata = data_from_pipe1()
+        else:
+            xdata = data_from_file(args.xdata)
+
+        # bin num
+        if args.hist_bins == 0:
+            # Sturges' rule.
+            bins = int(np.log2(len(xdata))) + 1
+            # Freedman–Diaconis' choice
+            #q75, q25 = np.percentile(data, [75 ,25])
+            #iqr = q75 - q25
+            #bins = int(2 * iqr / pow(len(data), 1/3))
+            #print(2 * iqr / pow(len(data), 1/3))
+        else:
+            bins = args.hist_bins
+        print("[INFO] number of bins : {}".format(bins), file = sys.stdout)
+
+
 
     # data modify
     if args.xnorm == True:
@@ -114,64 +140,42 @@ def mode_plot(args):
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
     ax.set_ylabel(args.ylabel)
+
+    ## hist mode only
+    if args.mode == "hist":
+        if args.ylabel == "y":
+            ylabel = "Frequency"
+        else:
+            ylabel = args.ylabel
+
     ax.set_title(args.title)
-    ax.grid()
-    plt.grid()
-
-    # data plotting range
-    if args.xlim != None:
-        xmin, xmax = range_parser(args.xlim)
-        plt.xlim(xmin, xmax)
-    if args.ylim != None:
-        ymin, ymax = range_parser(args.ylim)
-        plt.ylim(ymin, ymax)
-
-    ax.plot(xdata, ydata)
-
-    fig.tight_layout()
-
-    # Make margins transparent
-    if args.transparent == True:
-        fig.patch.set_alpha(0)
-
-    # set log scale
-    if args.xlog == True:
-        plt.xscale('log')
-    if args.ylog == True:
-        plt.yscale('log')
-
-    # save figure
-    if args.jpg :
-        plt.savefig(args.prefix + ".jpg")
-    else :
-        plt.savefig(args.prefix + ".png")
 
 
-def mode_scatter(args):
+    # Mode selection
+    if args.mode == "plot":
+        ax.plot(xdata, ydata)
+    elif args.mode == "scatter":
+        ax.scatter(xdata, ydata)
+    elif args.mode == "hist":
+        if args.hist_cumulative:
+            print("[INFO] plot with cumulative ratio plot", file = sys.stdout)
+            n, bins, patches = ax.hist(xdata, alpha = 0.7, bins = bins, label = ylabel)
+            y2 = np.add.accumulate(n) / n.sum()
+            x2 = np.convolve(bins, np.ones(2) / 2, mode="same")[1:]
+            ax2 = ax.twinx()
+            lines = ax2.plot(x2, y2, ls = '--', color = 'r', marker = 'o', label = 'cumulative ratio')
+            plt.legend(handles=[patches[0], lines[0]])
+        else:
+            print("[INFO] histogram only", file = sys.stdout)
+            ax.hist(xdata, bins = bins)
 
-    # data input
-    xdata, ydata = data_parser(args)
 
-    # data modify
-    if args.xnorm == True:
-        xdata = data_normalize(xdata)
-    if args.xstand == True:
-        xdata = data_standardize(xdata)
-    if args.ynorm == True:
-        ydata = data_normalize(ydata)
-    if args.ystand == True:
-        ydata = data_standardize(ydata)
+    # grid
+    if args.grid_off == True:
+        print("[INFO] set grid off", file = sys.stdout)
+        ax.grid()
+        plt.grid()
 
-
-    # figure prepare
-    if args.seaborn_off == False:
-        sns.set(style = "darkgrid", palette = "muted", color_codes = True)
-    fig, ax = plt.subplots()
-    ax.set_xlabel(args.xlabel)
-    ax.set_ylabel(args.ylabel)
-    ax.set_title(args.title)
-    ax.grid()
-    plt.grid()
 
     # data plotting range
     if args.xlim != None:
@@ -182,119 +186,32 @@ def mode_scatter(args):
         plt.ylim(ymin, ymax)
 
 
-    ax.scatter(xdata, ydata)
-
-    fig.tight_layout()
-
     # Make margins transparent
     if args.transparent == True:
-        fig.patch.set_alpha(0)
-
-    # set log scale
-    if args.xlog == True:
-        plt.xscale('log')
-    if args.ylog == True:
-        plt.yscale('log')
-
-
-    # save figure
-    if args.jpg :
-        plt.savefig(args.prefix + ".jpg")
-    else :
-        plt.savefig(args.prefix + ".png")
-
-
-def mode_hist(args):
-
-    # data input
-    if args.ydata != "-":
-        print("[WARN] If hist mode, inputed ydata is ignored", file = sys.stdout)
-    if args.xdata == "-":
-        data = data_from_pipe1()
-    else:
-        data = data_from_file(args.xdata)
-
-    # data modify
-    if args.xnorm == True:
-        data = data_normalize(data)
-    if args.xstand == True:
-        data = data_standardize(data)
-
-    # bin num
-    if args.hist_bins == 0:
-        # Sturges' rule.
-        #bins = int(np.log2(len(data))) + 1
-        # Freedman–Diaconis' choice
-        q75, q25 = np.percentile(data, [75 ,25])
-        iqr = q75 - q25
-        bins = int(2 * iqr / pow(len(data), 1/3))
-    else:
-        bins = args.hist_bins
-    print("[INFO] number of bins : {}".format(bins), file = sys.stdout)
-
-
-    # figure prepare
-    if args.seaborn_off == False:
-        sns.set(style = "darkgrid", palette = "muted", color_codes = True)
-
-    fig, ax = plt.subplots()
-    ax.set_xlabel(args.xlabel)
-    if args.ylabel == "y":
-        ylabel = "Frequency"
-    else:
-        ylabel = args.ylabel
-    ax.set_ylabel(ylabel)
-    ax.set_title(args.title)
-    ax.grid()
-    plt.grid()
-
-    # data plotting range
-    if args.xlim != None:
-        xmin, xmax = range_parser(args.xlim)
-        plt.xlim(xmin, xmax)
-    if args.ylim != None:
-        ymin, ymax = range_parser(args.ylim)
-        plt.ylim(ymin, ymax)
-
-    # hist plot
-    if args.hist_cumulative:
-        print("[INFO] plot with cumulative ratio plot", file = sys.stdout)
-        n, bins, patches = ax.hist(data, alpha = 0.7, bins = bins, label = ylabel)
-        y2 = np.add.accumulate(n) / n.sum()
-        x2 = np.convolve(bins, np.ones(2) / 2, mode="same")[1:]
-        ax2 = ax.twinx()
-        lines = ax2.plot(x2, y2, ls = '--', color = 'r', marker = 'o', label = 'cumulative ratio')
-        plt.legend(handles=[patches[0], lines[0]])
-    else:
-        print("[INFO] histogram only", file = sys.stdout)
-        ax.hist(data, bins = bins)
-
-    fig.tight_layout()
-
-
-    # Make margins transparent
-    if args.transparent == True:
+        print("[INFO] set background transparent", file = sys.stdout)
         fig.patch.set_alpha(0)
 
 
     # set log scale
     if args.xlog == True:
+        print("[INFO] set x-axis log scale", file = sys.stdout)
         plt.xscale('log')
     if args.ylog == True:
+        print("[INFO] set y-axis log scale", file = sys.stdout)
         plt.yscale('log')
+
+
+    fig.tight_layout()
 
 
     # save figure
     if args.jpg :
+        print("[INFO] output picture is {}".format(args.prefix + ".jpg"), file = sys.stdout)
         plt.savefig(args.prefix + ".jpg")
     else :
+        print("[INFO] output picture is {}".format(args.prefix + ".png"), file = sys.stdout)
         plt.savefig(args.prefix + ".png")
 
-
-"""
-def mode_bar(args):
-    pass
-"""
 
 
 def range_parser(lim_range):
@@ -335,9 +252,10 @@ def range_parser(lim_range):
         print("[ERROR] For --xlim or --ylim, use \"[10:100]\" as example", file = sys.stderr)
         sys.exit(1)
 
-    print("[INFO] plotting range parser normally terminated", file = sys.stdout)
+    print("[INFO] set plotting range [{}:{}]".format(min_,max_), file = sys.stdout)
 
     return min_, max_
+
 
 
 def data_from_pipe2(args):
@@ -439,32 +357,16 @@ def data_standardize(data):
 
 
 
-
-
+# main
 if __name__ == "__main__":
 
     # arg
     args = arg_parser()
 
     # mode
-    if args.mode == "plot":
-        print("[INFO] plot mode ", file = sys.stdout)
-        mode_plot(args)
+    print("[INFO] {} mode".format(args.mode), file = sys.stdout)
 
-    elif args.mode == "scatter":
-        print("[INFO] scatter mode", file = sys.stdout)
-        mode_scatter(args)
-
-    elif args.mode == "hist":
-        print("[INFO] hist mode", file = sys.stdout)
-        mode_hist(args)
-
-    elif args.mode == "bar":
-        print("[INFO] bar mode", file = sys.stdout)
-        mode_bar(args)
-    else :
-        print("[ERROR] mode name error", file = sys.stderr)
-        sys.exit(1)
+    common_plotter(args)
 
     print("[INFO] tmplot.py done", file = sys.stdout)
 
