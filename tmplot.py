@@ -47,6 +47,10 @@ def arg_parser():
             help = "Input y data type specification [default: float]", choices = ["float", "int", "str"])
 
     # plot option
+    parser.add_argument("--color", type = str, default = "cornflowerblue",
+            help = "Main plotting color [default: cornflowerblue]\n(See the official matplotlib site for color choices.)")
+    parser.add_argument("--label", type = str,
+            help = "Main plotting label [default: <None>]")
     parser.add_argument("--xlim", type = str,
             help = "plotting range. input data type must be int or float (Ex. --xlim \"[10:100]\") [default: not set]")
     parser.add_argument("--ylim", type = str,
@@ -56,9 +60,14 @@ def arg_parser():
     parser.add_argument("--ylog", action = "store_true",
             help = "Flag whether the y-axis should be log scaled")
     parser.add_argument("--xline", type = float,
-            help = "Draw a vertical line where the x-axis is (Ex. --xline 10) [default: not set]")
+            help = "Draw an additional perpendicular lines to the x-axis (Ex. --xline 10) [default: not set]")
     parser.add_argument("--yline", type = float,
-            help = "Draw a vertical line where the y-axis is (Ex. --yline 10) [default: not set]")
+            help = "Draw an Additional perpendicular lines to the y-axis (Ex. --yline 10) [default: not set]")
+    parser.add_argument("--xline-color", type = str, default = "orange",
+            help = "Color of additional perpendicular lines to the x-axis [default: orange]\n(See the official matplotlib site for color choices.) ")
+    parser.add_argument("--yline-color", type = str, default = "tomato",
+            help = "Color of additional perpendicular lines to the y-axis [default: tomato]\n(See the official matplotlib site for color choices.) ")
+
 
     # input data option
     parser.add_argument("--xnorm", action = "store_true",
@@ -95,8 +104,12 @@ def arg_parser():
     parser.add_argument("--hist-cumulative", action = "store_true",
             help = 'Flag whether plot cumulative ratio with histogram'\
                     '\n[CAUTION] If combined with --ylog, cumulative distribution would be log-scale, not histogram.')
+    parser.add_argument("--hist-cumulative-color", type = str, default = "green",
+            help = "Color of hitogram cumulative plot [default: green]\n(See the official matplotlib site for color choices.)")
     parser.add_argument("--hist-peak-highlight", action = "store_true",
             help = "Flag whether the major peaks of the histogram are drawn as vertical lines")
+    parser.add_argument("--hist-peak-highlight-color", type = str, default = "red",
+            help = "Color of histogram highlight bar [default: red]\n(See the official matplotlib site for color choices.) ")
 
 
     return parser.parse_args()
@@ -171,34 +184,47 @@ def common_plotter(args):
 
 
     # Mode selection
+    legend_list = []
+    print("[INFO] Main plot color is {}".format(args.color), file = sys.stdout)
     if args.mode == "plot":
-        ax.plot(xdata, ydata)
+        plots = ax.plot(xdata, ydata, color = args.color, label = args.label)
+        if args.label != None:
+            legend_list.append(plots[0])
     elif args.mode == "scatter":
-        ax.scatter(xdata, ydata)
+        scatters = ax.scatter(xdata, ydata, color = args.color, label = args.label)
+        if args.label != None:
+            legend_list.append(scatters[0])
     elif args.mode == "hist":
         if args.hist_cumulative == True and args.hist_peak_highlight == True:
             print("[ERROR] Using --hist-cumulative & --hist-peak-highlight together is unsupported", file = sys.stderr)
             sys.exit(1)
         elif args.hist_cumulative == True and args.hist_peak_highlight == False:
             print("[INFO] plot with cumulative ratio", file = sys.stdout)
-            n, bins, patches = ax.hist(xdata, alpha = 0.7, bins = bins, label = ylabel)
+            n, bins, patches = ax.hist(xdata, alpha = 0.7, bins = bins, color = args.color, label = args.label)
             y2 = np.add.accumulate(n) / n.sum()
             x2 = np.convolve(bins, np.ones(2) / 2, mode="same")[1:]
             ax2 = ax.twinx()
-            #lines = ax2.plot(x2, y2, ls = '--', color = 'r', marker = 'o', label = 'cumulative ratio')
-            lines = ax2.plot(x2, y2, ls = "--", color = "g", label = "culative ratio")
-            plt.legend(handles = [patches[0], lines[0]])
+            lines = ax2.plot(x2, y2, ls = "--", color = args.hist_cumulative, label = "culative ratio")
+            print("[INFO] Color of histogram cumulative ratio plot is {}".format(args.hist_cumulative), file = sys.stdout)
+            if args.label != None:
+                legend_list.append(patches[0])
+            legend_list.append(lines)
             if args.ylog == True:
                 print("[WARN] Using --hist-cumulative and --ylog together would result in cumulative ratio being on the log scale instead of histogram", file = sys.stdout)
         elif args.hist_peak_highlight == True and args.hist_cumulative == False:
             print("[INFO] plot with hist peak highlight bar", file = sys.stdout)
-            n, bins, patches = ax.hist(xdata, bins = bins, label = ylabel)
+            n, bins, patches = ax.hist(xdata, bins = bins, color = args.color, label = args.label)
             hist_peak_list = np.linspace(np.min(bins) + (bins[1] - bins[0]) / 2, np.max(bins) - (bins[1] - bins[0]) / 2, len(bins)-1)
             hist_peak = hist_peak_list[np.argmax(n)]
-            lines = plt.vlines(hist_peak, 0, n[np.argmax(n)] * 1.1, color = 'r', label = "peak : x = {}".format(hist_peak))
-            plt.legend(handles = [patches[0], lines])
+            lines = plt.vlines(hist_peak, 0, n[np.argmax(n)] * 1.1, color = args.hist_peak_highlight_color, label = "peak : x = {}".format(hist_peak))
+            print("[INFO] Color of histogram peak highlight bar is {}".format(args.hist_peak_highlight_color), file = sys.stdout)
+            if args.label != None:
+                legend_list.append(patches[0])
+            legend_list.append(lines)
         else:
-            ax.hist(xdata, bins = bins)
+            n, bins, patches = ax.hist(xdata, bins = bins, color = args.color, label = args.label)
+            if args.label != None:
+                legend_list.append(patches[0])
 
     elif args.mode == "box":
         pass
@@ -217,12 +243,24 @@ def common_plotter(args):
 
     # plot additional line
     if args.xline != None:
+        xline = ax.axvline(float(args.xline), color = args.xline_color, label = "x = {}".format(args.xline))
         print("[INFO] plot additional xline at {}".format(args.xline), file = sys.stdout)
-        ax.axvline(float(args.xline), color = 'orange')
+        print("[INFO] color of addtional xline is {}".format(args.xline_color), file = sys.stdout)
+        legend_list.append(xline)
 
     if args.yline != None:
+        yline = ax.axhline(float(args.yline), color = args.yline_color, label = "y = {}".format(args.yline))
         print("[INFO] plot additional yline at {}".format(args.yline), file = sys.stdout)
-        ax.axhline(float(args.yline), color = 'tomato')
+        print("[INFO] color of addtional yline is {}".format(args.yline_color), file = sys.stdout)
+        legend_list.append(yline)
+
+
+    # label
+    if len(legend_list) != 0:
+        print("[INFO] assign labels", file = sys.stdout)
+        plt.legend(handles = legend_list)
+    else:
+        print("[WARN] NOT assign label", file = sys.stdout)
 
 
     # grid
