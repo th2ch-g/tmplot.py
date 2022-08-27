@@ -94,6 +94,9 @@ def arg_parser():
 def common_plotter(args):
 
     # data input
+    print("[INFO] input x-data type is read as {}".format(args.xtype), file = sys.stdout)
+    print("[INFO] input y-data type is read as {}".format(args.ytype), file = sys.stdout)
+
     if args.mode == "plot" or args.mode == "scatter":
         xdata, ydata = data_parser(args)
 
@@ -101,9 +104,9 @@ def common_plotter(args):
         if args.ydata != "-":
             print("[WARN] If hist mode, inputed ydata is ignored", file = sys.stdout)
         if args.xdata == "-":
-            xdata = data_from_pipe1()
+            xdata = data_from_pipe1(args.xtype)
         else:
-            xdata = data_from_file(args.xdata)
+            xdata = data_from_file(args.xdata, args.xtype)
 
         # bin num
         if args.hist_bins == 0 and args.hist_bins_width == 0:
@@ -172,15 +175,16 @@ def common_plotter(args):
             ax2 = ax.twinx()
             #lines = ax2.plot(x2, y2, ls = '--', color = 'r', marker = 'o', label = 'cumulative ratio')
             lines = ax2.plot(x2, y2, ls = "--", color = "g", label = "culative ratio")
-            plt.legend(handles=[patches[0], lines[0]])
+            plt.legend(handles = [patches[0], lines[0]])
             if args.ylog == True:
                 print("[WARN] Using --hist-cumulative and --ylog together would result in cumulative ratio being on the log scale instead of histogram", file = sys.stdout)
         elif args.hist_peak_highlight == True and args.hist_cumulative == False:
             print("[INFO] plot with hist peak highlight bar", file = sys.stdout)
-            n, bins, patches = ax.hist(xdata, bins = bins)
+            n, bins, patches = ax.hist(xdata, bins = bins, label = ylabel)
             hist_peak_list = np.linspace(np.min(bins) + (bins[1] - bins[0]) / 2, np.max(bins) - (bins[1] - bins[0]) / 2, len(bins)-1)
             hist_peak = hist_peak_list[np.argmax(n)]
-            plt.vlines(hist_peak, 0, n[np.argmax(n)] * 1.1, color='r')
+            lines = plt.vlines(hist_peak, 0, n[np.argmax(n)] * 1.1, color = 'r', label = "x = {}".format(hist_peak))
+            plt.legend(handles = [patches[0], lines])
         else:
             ax.hist(xdata, bins = bins)
 
@@ -286,17 +290,38 @@ def data_from_pipe2(args):
         else:
             a = line.split(args.split)
 
+
+        if args.xtype == "float":
+            xdata.append(float(a[0]))
+
+        if args.xtype == "int":
+            xdata.append(int(a[0]))
+
+        if args.xtype == "str":
+            xdata.append(str(a[0]))
+
+        if args.ytype == "float":
+            ydata.append(float(a[0]))
+
+        if args.ytype == "int":
+            ydata.append(int(a[0]))
+
+        if args.ytype == "str":
+            ydata.append(str(a[0]))
+
+        """
         try:
             xdata.append(float(a[0]))
             ydata.append(float(a[1].split("\n")[0]))
         except:
             print("[ERROR] check target split character is correct or number of data inputed", file = sys.stderr)
             sys.exit(1)
+        """
 
     return xdata, ydata
 
 
-def data_from_pipe1():
+def data_from_pipe1(data_type):
 
     print("[INFO] 1 pipe input execute", file = sys.stdout)
 
@@ -304,12 +329,20 @@ def data_from_pipe1():
 
     for line in sys.stdin:
 
-        data.append(float(line.split("\n")[0]))
+
+        if data_type == "float":
+            data.append(float(line.split("\n")[0]))
+
+        if data_type == "int":
+            data.append(int(line.split("\n")[0]))
+
+        if data_type == "str":
+            data.append(str(line.split("\n")[0]))
 
     return data
 
 
-def data_from_file(file):
+def data_from_file(file, data_type):
 
     print("[INFO] file input execute", file = sys.stdout)
 
@@ -319,7 +352,14 @@ def data_from_file(file):
 
         for line in ref:
 
-            data.append(float(line.split("\n")[0]))
+            if data_type == "float":
+                data.append(float(line.split("\n")[0]))
+
+            if data_type == "int":
+                data.append(int(line.split("\n")[0]))
+
+            if data_type == "str":
+                data.append(str(line.split("\n")[0]))
 
     return data
 
@@ -331,13 +371,13 @@ def data_parser(args):
         return data_from_pipe2(args)
 
     elif args.xdata == "-" and args.ydata != "-":
-        return data_from_pipe1(), data_from_file(args.ydata)
+        return data_from_pipe1(args.xtype), data_from_file(args.ydata, args.ytype)
 
     elif args.xdata == "-" and args.ydata != "-":
-        return data_from_file(args.xdata), data_from_pipe1()
+        return data_from_file(args.xdata, args.xtype), data_from_pipe1(args.ytype)
 
     else:
-        return data_from_file(args.xdata), data_from_file(args.ydata)
+        return data_from_file(args.xdata, args.xtype), data_from_file(args.ydata, args.ytype)
 
 
 """
