@@ -17,13 +17,22 @@ import seaborn as sns
 
 def arg_parser():
 
+
     # parser object
     parser = argparse.ArgumentParser(description = 'Plotter that supports file and pipe input for quick description',
             formatter_class = argparse.RawTextHelpFormatter)
 
     # mode option
-    parser.add_argument("mode", choices = ['plot', 'scatter', 'hist', 'bar', 'violin', 'box', 'circle'],
-            help = "choose plot mode")
+    parser.add_argument("mode", choices = ['plot', 'scatter', 'hist', 'bar', 'violin', 'box', 'pie', 'empty'],
+            help = 'choose plot mode'\
+            '\nplot    : connect the dots and draw them.'\
+            '\nscatter : NOT connect the dots and draw them.'\
+            '\nhist    : draw histogram'\
+            '\nbar     : draw bar graph'\
+            '\nviolin  : draw violin plot'\
+            '\nbox     : Draw a box-and-whisker diagram'\
+            '\npie     : draw pie charti'\
+            '\nempty   : draw NOTHING')
 
     # basic data option
     parser.add_argument("-x", "--xdata", type = str, required = True,
@@ -78,11 +87,14 @@ def arg_parser():
     # mode specific option
     # hist mode option
     parser.add_argument("--hist-bins-width", type = float, default = 0,
-            help = "value of histogram bin width. (Ex. --hist-bins-width 0.7) [default: auto]\n[CAUTION] If combined with --hist-bins, --hist-bins takes precedence.")
+            help = 'value of histogram bin width. (Ex. --hist-bins-width 0.7) [default: auto]'\
+                    '\n[CAUTION] If combined with --hist-bins, --hist-bins takes precedence.')
     parser.add_argument("--hist-bins", type = int, default = 0,
-            help = "number of bins in hist mode. (Ex. --hist-bins 60) [default: auto]\n[CAUTION] If combined with --hist-bins-width, --hist-bins takes precedence.")
+            help = 'number of bins in hist mode. (Ex. --hist-bins 60) [default: auto]'\
+                    '\n[CAUTION] If combined with --hist-bins-width, --hist-bins takes precedence.')
     parser.add_argument("--hist-cumulative", action = "store_true",
-            help = "Flag whether plot cumulative ratio with histogram\n[CAUTION] If combined with --ylog, cumulative distribution would be log-scale, not histogram.")
+            help = 'Flag whether plot cumulative ratio with histogram'\
+                    '\n[CAUTION] If combined with --ylog, cumulative distribution would be log-scale, not histogram.')
     parser.add_argument("--hist-peak-highlight", action = "store_true",
             help = "Flag whether the major peaks of the histogram are drawn as vertical lines")
 
@@ -188,6 +200,19 @@ def common_plotter(args):
         else:
             ax.hist(xdata, bins = bins)
 
+    elif args.mode == "box":
+        pass
+    elif args.mode == "violin":
+        pass
+    elif args.mode == "pie":
+        pass
+    elif args.mode == "bar":
+        pass
+    elif args.mode == "empty":
+        pass
+    else:
+        print("[ERROR] Unknown mode", file = sys.stderr)
+        sys.exit(1)
 
 
 
@@ -308,15 +333,6 @@ def data_from_pipe2(args):
 
         if args.ytype == "str":
             ydata.append(str(a[0]))
-
-        """
-        try:
-            xdata.append(float(a[0]))
-            ydata.append(float(a[1].split("\n")[0]))
-        except:
-            print("[ERROR] check target split character is correct or number of data inputed", file = sys.stderr)
-            sys.exit(1)
-        """
 
     return xdata, ydata
 
