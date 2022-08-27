@@ -8,14 +8,11 @@ version = 0.1.0 (under development)
 LICENSE = MIT-LICENSE
 """
 
-
-
 import argparse
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import seaborn as sns
-
 
 
 def arg_parser():
@@ -81,11 +78,11 @@ def arg_parser():
     # mode specific option
     # hist mode option
     parser.add_argument("--hist-bins-width", type = float, default = 0,
-            help = "value of histogram bin width. (Ex. --hist-bins-width 0.7) [default: auto]\n[CAUTION] If combined with --hist-bins, --hist-bins-width takes precedence.")
+            help = "value of histogram bin width. (Ex. --hist-bins-width 0.7) [default: auto]\n[CAUTION] If combined with --hist-bins, --hist-bins takes precedence.")
     parser.add_argument("--hist-bins", type = int, default = 0,
-            help = "number of bins in hist mode. (Ex. --hist-bins 60) [default: auto]\n[CAUTION] If combined with --hist-bins-width, --hist-bins-width takes precedence.")
+            help = "number of bins in hist mode. (Ex. --hist-bins 60) [default: auto]\n[CAUTION] If combined with --hist-bins-width, --hist-bins takes precedence.")
     parser.add_argument("--hist-cumulative", action = "store_true",
-            help = "Flag whether plot cumulative ratio with histogram")
+            help = "Flag whether plot cumulative ratio with histogram\n[CAUTION] If combined with --ylog, cumulative distribution would be log-scale, not histogram.")
     parser.add_argument("--hist-peak-highlight", action = "store_true",
             help = "Flag whether the major peaks of the histogram are drawn as vertical lines")
 
@@ -109,17 +106,25 @@ def common_plotter(args):
             xdata = data_from_file(args.xdata)
 
         # bin num
-        if args.hist_bins == 0:
+        if args.hist_bins == 0 and args.hist_bins_width == 0:
             # Sturges' rule.
+            print("[INFO] number of histogram bins is determined by Sturges's rurle", file = sys.stdout)
             bins = int(np.log2(len(xdata))) + 1
+            """
             # Freedman–Diaconis' choice
-            #q75, q25 = np.percentile(data, [75 ,25])
-            #iqr = q75 - q25
-            #bins = int(2 * iqr / pow(len(data), 1/3))
-            #print(2 * iqr / pow(len(data), 1/3))
+            print("[INFO] number of histogram bins is determined by Freedman–Diaconis' choice", file = sys.stdout)
+            q75, q25 = np.percentile(data, [75 ,25])
+            iqr = q75 - q25
+            bins = int(2 * iqr / pow(len(data), 1/3))
+            """
         else:
-            bins = args.hist_bins
-        print("[INFO] number of bins : {}".format(bins), file = sys.stdout)
+            if args.hist_bins_width != 0:
+                bins = int(args.hist_bins_width * len(xdata))
+            if args.hist_bins != 0:
+                bins = args.hist_bins
+            if args.hist_bins != 0 and args.hist_bins_width != 0:
+                print("[WARN] When --hist-bins-width and --hist-bins are used together, --hist-bins takes precedence")
+        print("[INFO] number of histogram bins : {}".format(bins), file = sys.stdout)
 
 
 
@@ -140,6 +145,7 @@ def common_plotter(args):
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
     ax.set_ylabel(args.ylabel)
+    ax.set_title(args.title)
 
     ## hist mode only
     if args.mode == "hist":
@@ -147,8 +153,6 @@ def common_plotter(args):
             ylabel = "Frequency"
         else:
             ylabel = args.ylabel
-
-    ax.set_title(args.title)
 
 
     # Mode selection
@@ -158,13 +162,15 @@ def common_plotter(args):
         ax.scatter(xdata, ydata)
     elif args.mode == "hist":
         if args.hist_cumulative:
-            print("[INFO] plot with cumulative ratio plot", file = sys.stdout)
+            print("[INFO] plot with cumulative ratio", file = sys.stdout)
             n, bins, patches = ax.hist(xdata, alpha = 0.7, bins = bins, label = ylabel)
             y2 = np.add.accumulate(n) / n.sum()
             x2 = np.convolve(bins, np.ones(2) / 2, mode="same")[1:]
             ax2 = ax.twinx()
             lines = ax2.plot(x2, y2, ls = '--', color = 'r', marker = 'o', label = 'cumulative ratio')
             plt.legend(handles=[patches[0], lines[0]])
+            if args.ylog == True:
+                print("[WARN] Using --hist-cumulative and --ylog together would result in cumulative ratio being on the log scale instead of histogram", file = sys.stdout)
         else:
             print("[INFO] histogram only", file = sys.stdout)
             ax.hist(xdata, bins = bins)
@@ -201,10 +207,8 @@ def common_plotter(args):
         plt.yscale('log')
 
 
-    fig.tight_layout()
-
-
     # save figure
+    fig.tight_layout()
     if args.jpg :
         print("[INFO] output picture is {}".format(args.prefix + ".jpg"), file = sys.stdout)
         plt.savefig(args.prefix + ".jpg")
