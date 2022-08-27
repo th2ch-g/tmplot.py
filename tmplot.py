@@ -40,7 +40,7 @@ def arg_parser():
     parser.add_argument("-y", "--ydata", type = str, required = True,
             help = "y_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-y - \"")
     parser.add_argument("-s", "--split", type = str, default = " ",
-            help = "Target character for data division [default: <SPACE>]")
+            help = "Target character for delimiter [default: <SPACE>]")
     parser.add_argument("--xtype", type = str, default = "float",
             help = "Input x data type specification [default: float]", choices = ["float", "int", "str"])
     parser.add_argument("--ytype", type = str, default = "float",
@@ -195,7 +195,7 @@ def common_plotter(args):
             n, bins, patches = ax.hist(xdata, bins = bins, label = ylabel)
             hist_peak_list = np.linspace(np.min(bins) + (bins[1] - bins[0]) / 2, np.max(bins) - (bins[1] - bins[0]) / 2, len(bins)-1)
             hist_peak = hist_peak_list[np.argmax(n)]
-            lines = plt.vlines(hist_peak, 0, n[np.argmax(n)] * 1.1, color = 'r', label = "x = {}".format(hist_peak))
+            lines = plt.vlines(hist_peak, 0, n[np.argmax(n)] * 1.1, color = 'r', label = "peak : x = {}".format(hist_peak))
             plt.legend(handles = [patches[0], lines])
         else:
             ax.hist(xdata, bins = bins)
@@ -214,6 +214,15 @@ def common_plotter(args):
         print("[ERROR] Unknown mode", file = sys.stderr)
         sys.exit(1)
 
+
+    # plot additional line
+    if args.xline != None:
+        print("[INFO] plot additional xline at {}".format(args.xline), file = sys.stdout)
+        ax.axvline(float(args.xline), color = 'orange')
+
+    if args.yline != None:
+        print("[INFO] plot additional yline at {}".format(args.yline), file = sys.stdout)
+        ax.axhline(float(args.yline), color = 'tomato')
 
 
     # grid
