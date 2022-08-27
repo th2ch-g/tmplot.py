@@ -109,7 +109,8 @@ def mode_plot(args):
 
 
     # figure prepare
-    sns.set(style = "darkgrid", palette = "muted", color_codes = True)
+    if args.seaborn_off == False:
+        sns.set(style = "darkgrid", palette = "muted", color_codes = True)
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
     ax.set_ylabel(args.ylabel)
@@ -128,6 +129,16 @@ def mode_plot(args):
     ax.plot(xdata, ydata)
 
     fig.tight_layout()
+
+    # Make margins transparent
+    if args.transparent == True:
+        fig.patch.set_alpha(0)
+
+    # set log scale
+    if args.xlog == True:
+        plt.xscale('log')
+    if args.ylog == True:
+        plt.yscale('log')
 
     # save figure
     if args.jpg :
@@ -153,7 +164,8 @@ def mode_scatter(args):
 
 
     # figure prepare
-    sns.set(style = "darkgrid", palette = "muted", color_codes = True)
+    if args.seaborn_off == False:
+        sns.set(style = "darkgrid", palette = "muted", color_codes = True)
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
     ax.set_ylabel(args.ylabel)
@@ -173,6 +185,17 @@ def mode_scatter(args):
     ax.scatter(xdata, ydata)
 
     fig.tight_layout()
+
+    # Make margins transparent
+    if args.transparent == True:
+        fig.patch.set_alpha(0)
+
+    # set log scale
+    if args.xlog == True:
+        plt.xscale('log')
+    if args.ylog == True:
+        plt.yscale('log')
+
 
     # save figure
     if args.jpg :
@@ -211,7 +234,8 @@ def mode_hist(args):
 
 
     # figure prepare
-    sns.set(style = "darkgrid", palette = "muted", color_codes = True)
+    if args.seaborn_off == False:
+        sns.set(style = "darkgrid", palette = "muted", color_codes = True)
 
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
@@ -246,6 +270,19 @@ def mode_hist(args):
         ax.hist(data, bins = bins)
 
     fig.tight_layout()
+
+
+    # Make margins transparent
+    if args.transparent == True:
+        fig.patch.set_alpha(0)
+
+
+    # set log scale
+    if args.xlog == True:
+        plt.xscale('log')
+    if args.ylog == True:
+        plt.yscale('log')
+
 
     # save figure
     if args.jpg :
