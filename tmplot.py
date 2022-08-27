@@ -151,8 +151,8 @@ def common_plotter(args):
     if args.mode == "hist":
         if args.ylabel == "y":
             ylabel = "Frequency"
-        else:
-            ylabel = args.ylabel
+        ax.set_ylabel(args.ylabel)
+
 
 
     # Mode selection
@@ -161,19 +161,30 @@ def common_plotter(args):
     elif args.mode == "scatter":
         ax.scatter(xdata, ydata)
     elif args.mode == "hist":
-        if args.hist_cumulative:
+        if args.hist_cumulative == True and args.hist_peak_highlight == True:
+            print("[ERROR] Using --hist-cumulative & --hist-peak-highlight together is unsupported", file = sys.stderr)
+            sys.exit(1)
+        elif args.hist_cumulative == True and args.hist_peak_highlight == False:
             print("[INFO] plot with cumulative ratio", file = sys.stdout)
             n, bins, patches = ax.hist(xdata, alpha = 0.7, bins = bins, label = ylabel)
             y2 = np.add.accumulate(n) / n.sum()
             x2 = np.convolve(bins, np.ones(2) / 2, mode="same")[1:]
             ax2 = ax.twinx()
-            lines = ax2.plot(x2, y2, ls = '--', color = 'r', marker = 'o', label = 'cumulative ratio')
+            #lines = ax2.plot(x2, y2, ls = '--', color = 'r', marker = 'o', label = 'cumulative ratio')
+            lines = ax2.plot(x2, y2, ls = "--", color = "g", label = "culative ratio")
             plt.legend(handles=[patches[0], lines[0]])
             if args.ylog == True:
                 print("[WARN] Using --hist-cumulative and --ylog together would result in cumulative ratio being on the log scale instead of histogram", file = sys.stdout)
+        elif args.hist_peak_highlight == True and args.hist_cumulative == False:
+            print("[INFO] plot with hist peak highlight bar", file = sys.stdout)
+            n, bins, patches = ax.hist(xdata, bins = bins)
+            hist_peak_list = np.linspace(np.min(bins) + (bins[1] - bins[0]) / 2, np.max(bins) - (bins[1] - bins[0]) / 2, len(bins)-1)
+            hist_peak = hist_peak_list[np.argmax(n)]
+            plt.vlines(hist_peak, 0, n[np.argmax(n)] * 1.1, color='r')
         else:
-            print("[INFO] histogram only", file = sys.stdout)
             ax.hist(xdata, bins = bins)
+
+
 
 
     # grid
