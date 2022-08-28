@@ -75,13 +75,17 @@ def arg_parser():
 
     # input data option
     parser.add_argument("--xnorm", action = "store_true",
-            help = "Flag whether inputed x data normalization")
+            help = "Flag whether inputed x data normalization"\
+                    "If the data type is str, an error will occur")
     parser.add_argument("--ynorm", action = "store_true",
-            help = "Flag whether inputed y data normalization")
+            help = "Flag whether inputed y data normalization"\
+                    "If the data type is str, an error will occur")
     parser.add_argument("--xstand", action = "store_true",
-            help = "Flag whether inputed x data standardization")
+            help = "Flag whether inputed x data standardization"\
+                    "If the data type is str, an error will occur")
     parser.add_argument("--ystand", action = "store_true",
-            help = "Flag whether inputed y data standardization")
+            help = "Flag whether inputed y data standardization"\
+                    "If the data type is str, an error will occur")
 
     # output picture option
     parser.add_argument("-p", "--prefix", type = str, default = "out",
@@ -117,9 +121,16 @@ def arg_parser():
             help = "Color of histogram highlight bar [default: red]\n(See the official matplotlib site for color choices. "\
                     "https://matplotlib.org/stable/gallery/color/named_colors.html) ")
 
+    # bar mode option
+    parser.add_argument("--bar-width", type = float, default = 0.8,
+            help = "Value of bar width [default: 0.8]")
+
+
 
     return parser.parse_args()
 
+
+#===========================================================================
 
 
 def common_plotter(args):
@@ -160,6 +171,10 @@ def common_plotter(args):
                 print("[WARN] When --hist-bins-width and --hist-bins are used together, --hist-bins takes precedence")
         print("[INFO] number of histogram bins : {}".format(bins), file = sys.stdout)
 
+    elif args.mode == "bar":
+        xdata, ydata = data_parser(args)
+    elif args.mode == "pie":
+        xdata, ydata = data_parser(args)
 
 
 
@@ -179,7 +194,11 @@ def common_plotter(args):
         sns.set(style = "darkgrid", palette = "muted", color_codes = True)
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
+    if args.mode == "pie" and args.xlabel == "x":
+        ax.set_xlabel(" ")
     ax.set_ylabel(args.ylabel)
+    if args.mode == "pie" and args.ylabel == "y":
+        ax.set_ylabel(" ")
     if args.title == "t=p":
         ax.set_title(args.prefix)
     else:
@@ -189,6 +208,8 @@ def common_plotter(args):
         if args.ylabel == "y":
             ylabel = "Frequency"
         ax.set_ylabel(args.ylabel)
+
+
 
     # set log scale
     if args.xlog == True:
@@ -241,10 +262,12 @@ def common_plotter(args):
         pass
 
     elif args.mode == "pie":
-        pass
+        pie = ax.pie(ydata, labels = xdata, autopct="%.1f%%", pctdistance=0.7)
 
     elif args.mode == "bar":
-        pass
+        bar = ax.bar(xdata, ydata, color = args.color, label = args.label, width = args.bar_width)
+        if args.label != None:
+            legend_list.append(bar)
 
     elif args.mode == "empty":
         pass
@@ -316,6 +339,8 @@ def common_plotter(args):
         plt.savefig(args.prefix + ".png")
 
 
+
+#===========================================================================
 
 
 def lines_parser(lines):
@@ -391,6 +416,8 @@ def range_parser(lim_range):
 
     return min_, max_
 
+
+#===========================================================================
 
 
 def data_from_pipe2(args):
@@ -487,6 +514,9 @@ def data_parser(args):
         return data_from_file(args.xdata, args.xtype), data_from_file(args.ydata, args.ytype)
 
 
+#===========================================================================
+
+
 """
 def data_cut(data, min_, max_):
 
@@ -517,6 +547,8 @@ def data_standardize(data):
 
     return list(map(lambda x: (x - mean_) / std_, data))
 
+
+#===========================================================================
 
 
 # main

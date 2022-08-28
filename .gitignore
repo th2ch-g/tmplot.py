@@ -2,3 +2,5 @@
 *.png
 *.jpg
 *.txt
+#!/test/*
+#!/img/*

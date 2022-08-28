@@ -18,6 +18,8 @@ cd tmplot.py && \
 sed -e "1i#\!$(which python3)" -i tmplot.py
 ~~~
 
+[CAUTION] Please write shebang in a text editor etc, as using sed on MacOS may cause errors.
+
 ### dependencies
 - python3 (>=3.9.12 tested)
     - matplotlib
