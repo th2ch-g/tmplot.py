@@ -1,6 +1,6 @@
 # tmplot.py
 
-Plotter for when you just want to draw a little diagram.
+One liner Plotter for when you just want to draw a little diagram.
 
 1. [Install tmplot.py](#anchor1)
 1. [Gallery](#anchor2)
