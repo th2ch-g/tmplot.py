@@ -8,6 +8,8 @@ version = 0.1.0 (under development)
 LICENSE = MIT-LICENSE
 """
 
+
+
 import argparse
 import matplotlib.pyplot as plt
 import numpy as np
@@ -47,7 +49,7 @@ def arg_parser():
 
     # plot option
     parser.add_argument("-c", "--color", type = str, default = "cornflowerblue",
-            help = "Main plotting color [default: cornflowerblue]\n(See the official matplotlib site for color choices."\
+            help = "Main plotting color [default: cornflowerblue]\n(See the official matplotlib site for color choices. "\
                     "https://matplotlib.org/stable/gallery/color/named_colors.html)")
     parser.add_argument("-l", "--label", type = str,
             help = "Main plotting label [default: <None>]")
@@ -64,8 +66,8 @@ def arg_parser():
     parser.add_argument("--yline", type = str,
             help = "Draw an Additional perpendicular lines to the y-axis (Ex. --yline 10) [default: not set]")
     parser.add_argument("--xline-color", type = str, default = "orange",
-            help = "Color of additional perpendicular lines to the x-axis [default: orange]\n(See the official matplotlib site for color choices."\
-                    " https://matplotlib.org/stable/gallery/color/named_colors.html) ")
+            help = "Color of additional perpendicular lines to the x-axis [default: orange]\n(See the official matplotlib site for color choices. "\
+                    "https://matplotlib.org/stable/gallery/color/named_colors.html) ")
     parser.add_argument("--yline-color", type = str, default = "tomato",
             help = "Color of additional perpendicular lines to the y-axis [default: tomato]\n(See the official matplotlib site for color choices. "\
                     "https://matplotlib.org/stable/gallery/color/named_colors.html) ")
@@ -102,16 +104,17 @@ def arg_parser():
             help = 'value of histogram bin width. (Ex. --hist-bins-width 0.7) [default: auto]'\
                     '\n[CAUTION] If combined with --hist-bins, --hist-bins takes precedence.')
     parser.add_argument("--hist-bins", type = int, default = 0,
-            help = 'number of bins in hist mode. (Ex. --hist-bins 60) [default: auto]')
+            help = 'number of bins in hist mode. (Ex. --hist-bins 60) [default: auto]'\
+                    '\n[CAUTION] If combined with --hist-bins-width, --hist-bins takes precedence.')
     parser.add_argument("--hist-cumulative", action = "store_true",
             help = 'Flag whether plot cumulative ratio with histogram')
     parser.add_argument("--hist-cumulative-color", type = str, default = "green",
-            help = "Color of hitogram cumulative plot [default: green]\n(See the official matplotlib site for color choices."\
-                    " https://matplotlib.org/stable/gallery/color/named_colors.html)")
+            help = "Color of hitogram cumulative plot [default: green]\n(See the official matplotlib site for color choices. "\
+                    "https://matplotlib.org/stable/gallery/color/named_colors.html)")
     parser.add_argument("--hist-peak-highlight", action = "store_true",
             help = "Flag whether the major peaks of the histogram are drawn as vertical lines")
     parser.add_argument("--hist-peak-highlight-color", type = str, default = "red",
-            help = "Color of histogram highlight bar [default: red]\n(See the official matplotlib site for color choices."\
+            help = "Color of histogram highlight bar [default: red]\n(See the official matplotlib site for color choices. "\
                     "https://matplotlib.org/stable/gallery/color/named_colors.html) ")
 
 
@@ -213,7 +216,7 @@ def common_plotter(args):
     elif args.mode == "hist":
         n, bins, patches = ax.hist(xdata, bins = bins, color = args.color, label = args.label)
         if args.label != None:
-                legend_list.append(patches[0])
+            legend_list.append(patches[0])
         if args.hist_peak_highlight == True:
             print("[INFO] plot with hist peak highlight bar", file = sys.stdout)
             hist_peak_list = np.linspace(np.min(bins) + (bins[1] - bins[0]) / 2, np.max(bins) - (bins[1] - bins[0]) / 2, len(bins)-1)
@@ -228,7 +231,7 @@ def common_plotter(args):
             x2 = np.convolve(bins, np.ones(2) / 2, mode="same")[1:]
             ax2 = ax.twinx()
             lines = ax2.plot(x2, y2, ls = "--", color = args.hist_cumulative_color, label = "culative ratio")
-            print("[INFO] Color of histogram cumulative ratio plot is {}".format(args.hist_cumulative), file = sys.stdout)
+            print("[INFO] Color of histogram cumulative ratio plot is {}".format(args.hist_cumulative_color), file = sys.stdout)
             legend_list.append(lines[0])
 
     elif args.mode == "box":
@@ -414,13 +417,13 @@ def data_from_pipe2(args):
             xdata.append(str(a[0]))
 
         if args.ytype == "float":
-            ydata.append(float(a[0]))
+            ydata.append(float(a[1]))
 
         if args.ytype == "int":
-            ydata.append(int(a[0]))
+            ydata.append(int(a[1]))
 
         if args.ytype == "str":
-            ydata.append(str(a[0]))
+            ydata.append(str(a[1]))
 
     return xdata, ydata
 
