@@ -91,7 +91,7 @@ cat data/tag1.txt | tmplot.py bar -x - -y - --xlabel datas -p bar1 -t bar1 --yla
 <a id="pie1"></a>
 Ex. pie1
 ~~~
-cat data/tag1.txt | python3 tmplot.py pie -x - -y - -xt str --prefix pie1 -t t=p
+cat data/tag1.txt | tmplot.py pie -x - -y - -xt str --prefix pie1 -t t=p
 ~~~
 
 

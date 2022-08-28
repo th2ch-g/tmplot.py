@@ -293,7 +293,7 @@ def common_plotter(args):
     if args.yline != None:
         ylines_list = lines_parser(args.yline)
         for i in range(0, len(ylines_list)):
-            yline = ax.axhline(ylines_list[i], color = args.yline_color, label = "x = {}".format(ylines_list[i]))
+            yline = ax.axhline(ylines_list[i], color = args.yline_color, label = "y = {}".format(ylines_list[i]))
             print("[INFO] plot additional yline at {}".format(ylines_list[i]), file = sys.stdout)
             legend_list.append(yline)
         print("[INFO] color of addtional yline is {}".format(args.yline_color), file = sys.stdout)
