@@ -2,15 +2,18 @@
 
 One liner Plotter for when you just want to draw a little diagram.
 
-1. [Install tmplot.py](#anchor1)
-1. [Gallery](#anchor2)
-1. [Quick start](#anchor3)
-1. [Mode & Options](#anchor4)
-1. [Support function & Usage](#anchor5)
-1. [Other tmplot](#anchor6)
+
+- [tmplot.py](#tmplotpy)
+  - [Install tmplot.py](#install-tmplotpy)
+    - [dependencies](#dependencies)
+  - [Gallery](#gallery)
+  - [Quick start](#quick-start)
+  - [Mode & Options](#mode--options)
+  - [Support function & Usage](#support-function--usage)
+  - [Other tmplot](#other-tmplot)
 
 
-<a id="anchor1"></a>
+
 ## Install tmplot.py
 ~~~
 git clone https://github.com/th2ch-g/tmplot.py.git && \
@@ -29,8 +32,8 @@ sed -e "1i#\!$(which python3)" -i tmplot.py
     - sys
 
 
-<a id="anchor2"></a>
-# Gallery
+
+## Gallery
 <a href=#plot1>
     <img src="img/plot1.png" class="galleryItem" width=200px></img>
 </a>
@@ -55,47 +58,55 @@ sed -e "1i#\!$(which python3)" -i tmplot.py
     <img src="img/pie1.png" class="galleryItem" width=200px></img>
 </a>
 
+<a href=#empty1>
+    <img src="img/empty1.png" class="galleryItem" width=200px></img>
+</a>
 
-<a id="anchor3"></a>
-# Quick start
+## Quick start
 <a id="plot1"></a>
 Ex. plot1
-~~~
+~~~sh
 for i in {0..100}; do echo ""; done | awk '{print rand(), rand()}' | tmplot.py plot -x - -y - --prefix plot1 --title plot1 --xlabel rand1 --ylabel rand2
 ~~~
 
 <a id="scatter1"></a>
 Ex.2 scatter1
-~~~
+~~~sh
 for i in {0..100}; do echo ""; done | awk '{print rand(), rand()}' | tmplot.py scatter -x - -y - --prefix scatter1 --title scatter1 --xlabel rand1 --ylabel rand2 --xline "[0.2,0.6]" --yline "[0.2,0.8]"
 ~~~
 
 <a id="hist1"></a>
 Ex. hist1
-~~~
+~~~sh
 cat data/grauss.0.1.10k.txt | tmplot.py hist -x - -y - -p hist1 -t t=p --label gauss.0.1.10k --hist-peak-highlight
 ~~~
 
 <a id="hist2"></a>
 Ex. hist2
-~~~
+~~~sh
 for i in {0..100}; do echo ""; done | awk '{print rand()}' | tmplot.py hist -x - -y - --hist-cumulative -p hist2 -t t=p --seaborn-off --label rand --hist-bins 15
 ~~~
 
 <a id="bar1"></a>
 Ex. bar1
-~~~
+~~~sh
 cat data/tag1.txt | tmplot.py bar -x - -y - --xlabel datas -p bar1 -t bar1 --ylabel percent --yline "[0.5]" --yline-color purple --xtype str --color green
 ~~~
 
 <a id="pie1"></a>
 Ex. pie1
-~~~
+~~~sh
 cat data/tag1.txt | tmplot.py pie -x - -y - -xt str --prefix pie1 -t t=p
 ~~~
 
+<a id="empty1"></a>
+Ex. empty1
+~~~sh
+tmplot.py empty -x - -y - -xl e1 -yl e2 -p empty1 -t t=p --xline "[1,2,3]" --yline "[2,3,4]" --xline-color green --yline-color cornflowerblue
+~~~
 
-<a id="anchor4"></a>
+
+
 ## Mode & Options
 ~~~
 usage: tmplot.py [-h] -x XDATA -y YDATA [-s SPLIT] [-xt {float,int,str}] [-yt {float,int,str}] [-c COLOR] [-l LABEL] [--xlim XLIM] [--ylim YLIM] [--xlog] [--ylog] [--xline XLINE] [--yline YLINE]
@@ -185,7 +196,7 @@ optional arguments:
 ~~~
 
 
-<a id="anchor5"></a>
+
 ## Support function & Usage
 
 |                                                   | Support / Unsupport | Usage example                                                                     |
@@ -230,6 +241,6 @@ optional arguments:
 | Change the cumulative ratio of histograms         | O                   | --hist-cumulative-color orange                                                    |
 | Change bar width                                  | O                   | --bar-width 0.4                                                                   |
 
-<a id="anchor6"></a>
+
 ## Other tmplot
 tmplot (all written in Rust) https://github.com/th2ch-g/tmplot
