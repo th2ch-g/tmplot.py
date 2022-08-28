@@ -1,6 +1,6 @@
 .DS_Store
-*.png
-*.jpg
-*.txt
-#!/test/*
-#!/img/*
+out.png
+out.jpg
+!/test/*
+!/img/*
+!/data/*
