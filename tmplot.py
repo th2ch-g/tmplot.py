@@ -91,9 +91,9 @@ def arg_parser():
     parser.add_argument("-p", "--prefix", type = str, default = "out",
             help = "output picture file prefix. [default: out]")
     parser.add_argument("-xl", "--xlabel", type = str, default = "x",
-            help = "output picture xlabel. [default: x]")
+            help = "output picture xlabel. [default: x] [default(pie): \" \"]")
     parser.add_argument("-yl", "--ylabel", type = str, default = "y",
-            help = "output picture ylabel. [default: y] [default(hist): Frequency]")
+            help = "output picture ylabel. [default: y] [default(hist): Frequency] [default(pie): \" \"]")
     parser.add_argument("-t", "--title", type = str, default = " ",
             help = "output picture title. [default: <NONE>] If you use \"--title t=p\", title will be the same as prefix")
     parser.add_argument("-j", "--jpg", action = 'store_true', help = "Flag whether JPG output is performed. [default: <PREFIX>.png]")
@@ -207,7 +207,7 @@ def common_plotter(args):
     if args.mode == "hist":
         if args.ylabel == "y":
             ylabel = "Frequency"
-        ax.set_ylabel(args.ylabel)
+            ax.set_ylabel(ylabel)
 
 
 
@@ -245,7 +245,7 @@ def common_plotter(args):
             lines = plt.vlines(hist_peak, 0, n[np.argmax(n)] * 1.1, color = args.hist_peak_highlight_color, label = "peak : x = {}".format(hist_peak))
             print("[INFO] Color of histogram peak highlight bar is {}".format(args.hist_peak_highlight_color), file = sys.stdout)
             legend_list.append(lines)
-        if args.hist_peak_highlight == True:
+        if args.hist_cumulative == True:
             print("[INFO] plot with cumulative ratio", file = sys.stdout)
             n, bins, patches = ax.hist(xdata, alpha = 0.7, bins = bins, color = args.color, label = args.label)
             y2 = np.add.accumulate(n) / n.sum()
@@ -266,6 +266,10 @@ def common_plotter(args):
 
     elif args.mode == "bar":
         bar = ax.bar(xdata, ydata, color = args.color, label = args.label, width = args.bar_width)
+        if args.bar_width != 0.8:
+            print("[INFO] bar width is {}".format(args.bar_width), file = sys.stdout)
+        if args.bar_width > 1.0:
+            print("[WARN] If bar width is larger than 1.0, bar graphs may be difficult to see.", file = sys.stdout)
         if args.label != None:
             legend_list.append(bar)
 
