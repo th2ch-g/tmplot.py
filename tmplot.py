@@ -30,7 +30,7 @@ def arg_parser():
             '\nhist    : draw histogram'\
             '\nbar     : draw bar graph'\
             '\nviolin  : draw violin plot'\
-            '\nbox     : Draw a box-and-whisker diagram'\
+            '\nbox     : draw a box-and-whisker diagram'\
             '\npie     : draw pie charti'\
             '\nempty   : draw NOTHING')
 
@@ -41,15 +41,15 @@ def arg_parser():
             help = "y_data of 2D-plot. \nSupports FILE name or PIPE input. For pipe input, use \"-y - \"")
     parser.add_argument("-s", "--split", type = str, default = " ",
             help = "Target character for delimiter [default: <SPACE>]")
-    parser.add_argument("--xtype", type = str, default = "float",
+    parser.add_argument("-xt", "--xtype", type = str, default = "float",
             help = "Input x data type specification [default: float]", choices = ["float", "int", "str"])
-    parser.add_argument("--ytype", type = str, default = "float",
+    parser.add_argument("-yt", "--ytype", type = str, default = "float",
             help = "Input y data type specification [default: float]", choices = ["float", "int", "str"])
 
     # plot option
-    parser.add_argument("--color", type = str, default = "cornflowerblue",
-            help = "Main plotting color [default: cornflowerblue]\n(See the official matplotlib site for color choices.)")
-    parser.add_argument("--label", type = str,
+    parser.add_argument("-c", "--color", type = str, default = "cornflowerblue",
+            help = "Main plotting color [default: cornflowerblue]\n(See the official matplotlib site for color choices. https://matplotlib.org/stable/gallery/color/named_colors.html)")
+    parser.add_argument("-l", "--label", type = str,
             help = "Main plotting label [default: <None>]")
     parser.add_argument("--xlim", type = str,
             help = "plotting range. input data type must be int or float (Ex. --xlim \"[10:100]\") [default: not set]")
@@ -59,14 +59,14 @@ def arg_parser():
             help = "Flag whether the x-axis should be log scaled")
     parser.add_argument("--ylog", action = "store_true",
             help = "Flag whether the y-axis should be log scaled")
-    parser.add_argument("--xline", type = float,
+    parser.add_argument("--xline", type = str,
             help = "Draw an additional perpendicular lines to the x-axis (Ex. --xline 10) [default: not set]")
-    parser.add_argument("--yline", type = float,
+    parser.add_argument("--yline", type = str,
             help = "Draw an Additional perpendicular lines to the y-axis (Ex. --yline 10) [default: not set]")
     parser.add_argument("--xline-color", type = str, default = "orange",
-            help = "Color of additional perpendicular lines to the x-axis [default: orange]\n(See the official matplotlib site for color choices.) ")
+            help = "Color of additional perpendicular lines to the x-axis [default: orange]\n(See the official matplotlib site for color choices. https://matplotlib.org/stable/gallery/color/named_colors.html) ")
     parser.add_argument("--yline-color", type = str, default = "tomato",
-            help = "Color of additional perpendicular lines to the y-axis [default: tomato]\n(See the official matplotlib site for color choices.) ")
+            help = "Color of additional perpendicular lines to the y-axis [default: tomato]\n(See the official matplotlib site for color choices. https://matplotlib.org/stable/gallery/color/named_colors.html) ")
 
 
     # input data option
@@ -80,18 +80,19 @@ def arg_parser():
             help = "Flag whether inputed y data standardization")
 
     # output picture option
-    parser.add_argument("--prefix", type = str, default = "out",
+    parser.add_argument("-p", "--prefix", type = str, default = "out",
             help = "output picture file prefix. [default: out]")
-    parser.add_argument("--xlabel", type = str, default = "x",
+    parser.add_argument("-xl", "--xlabel", type = str, default = "x",
             help = "output picture xlabel. [default: x]")
-    parser.add_argument("--ylabel", type = str, default = "y",
+    parser.add_argument("-yl", "--ylabel", type = str, default = "y",
             help = "output picture ylabel. [default: y] [default(hist): Frequency]")
-    parser.add_argument("--title", type = str, default = " ",
-            help = "output picture title. [default: <NONE>]")
-    parser.add_argument("--jpg", action = 'store_true', help = "Flag whether JPG output is performed. [default: <PREFIX>.png]")
+    parser.add_argument("-t", "--title", type = str, default = " ",
+            help = "output picture title. [default: <NONE>] If you use \"--title t=p\", title will be the same as prefix")
+    parser.add_argument("-j", "--jpg", action = 'store_true', help = "Flag whether JPG output is performed. [default: <PREFIX>.png]")
     parser.add_argument("--transparent", action = "store_true", help = "Flag whether make the background of the output image transparent")
     parser.add_argument("--seaborn-off", action = "store_true", help = "Flag whether seaborn theme off")
     parser.add_argument("--grid-off", action = "store_true", help = "Flag whether turn off grid")
+
 
     # mode specific option
     # hist mode option
@@ -105,11 +106,11 @@ def arg_parser():
             help = 'Flag whether plot cumulative ratio with histogram'\
                     '\n[CAUTION] If combined with --ylog, cumulative distribution would be log-scale, not histogram.')
     parser.add_argument("--hist-cumulative-color", type = str, default = "green",
-            help = "Color of hitogram cumulative plot [default: green]\n(See the official matplotlib site for color choices.)")
+            help = "Color of hitogram cumulative plot [default: green]\n(See the official matplotlib site for color choices. https://matplotlib.org/stable/gallery/color/named_colors.html)")
     parser.add_argument("--hist-peak-highlight", action = "store_true",
             help = "Flag whether the major peaks of the histogram are drawn as vertical lines")
     parser.add_argument("--hist-peak-highlight-color", type = str, default = "red",
-            help = "Color of histogram highlight bar [default: red]\n(See the official matplotlib site for color choices.) ")
+            help = "Color of histogram highlight bar [default: red]\n(See the official matplotlib site for color choices. https://matplotlib.org/stable/gallery/color/named_colors.html) ")
 
 
     return parser.parse_args()
@@ -139,7 +140,7 @@ def common_plotter(args):
             print("[INFO] number of histogram bins is determined by Sturges's rurle", file = sys.stdout)
             bins = int(np.log2(len(xdata))) + 1
             """
-            # Freedman–Diaconis' choice
+            # Freedman Diaconis' choice
             print("[INFO] number of histogram bins is determined by Freedman–Diaconis' choice", file = sys.stdout)
             q75, q25 = np.percentile(data, [75 ,25])
             iqr = q75 - q25
@@ -173,8 +174,10 @@ def common_plotter(args):
     fig, ax = plt.subplots()
     ax.set_xlabel(args.xlabel)
     ax.set_ylabel(args.ylabel)
-    ax.set_title(args.title)
-
+    if args.title == "t=p":
+        ax.set_title(args.prefix)
+    else:
+        ax.set_title(args.title)
     ## hist mode only
     if args.mode == "hist":
         if args.ylabel == "y":
@@ -242,6 +245,7 @@ def common_plotter(args):
 
 
     # plot additional line
+    """
     if args.xline != None:
         xline = ax.axvline(float(args.xline), color = args.xline_color, label = "x = {}".format(args.xline))
         print("[INFO] plot additional xline at {}".format(args.xline), file = sys.stdout)
@@ -253,6 +257,23 @@ def common_plotter(args):
         print("[INFO] plot additional yline at {}".format(args.yline), file = sys.stdout)
         print("[INFO] color of addtional yline is {}".format(args.yline_color), file = sys.stdout)
         legend_list.append(yline)
+    """
+    if args.xline != None:
+        xlines_list = lines_parser(args.xline)
+        for i in range(0, len(xlines_list)):
+            xline = ax.axvline(xlines_list[i], color = args.xline_color, label = "x = {}".format(xlines_list[i]))
+            print("[INFO] plot additional xline at {}".format(xlines_list[i]), file = sys.stdout)
+            legend_list.append(xline)
+        print("[INFO] color of addtional xline is {}".format(args.xline_color), file = sys.stdout)
+    if args.yline != None:
+        ylines_list = lines_parser(args.yline)
+        for i in range(0, len(ylines_list)):
+            yline = ax.axhline(ylines_list[i], color = args.yline_color, label = "x = {}".format(ylines_list[i]))
+            print("[INFO] plot additional yline at {}".format(ylines_list[i]), file = sys.stdout)
+            legend_list.append(yline)
+        print("[INFO] color of addtional yline is {}".format(args.yline_color), file = sys.stdout)
+
+
 
 
     # label
@@ -302,6 +323,38 @@ def common_plotter(args):
     else :
         print("[INFO] output picture is {}".format(args.prefix + ".png"), file = sys.stdout)
         plt.savefig(args.prefix + ".png")
+
+
+
+
+def lines_parser(lines):
+
+    print("[INFO] plotting lines parser is called", file = sys.stdout)
+
+    if "[" not in lines:
+        print("[ERROR] plotting lines parser error, not include \"[\"", file = sys.stderr)
+        print("[ERROR] For --xline or --yline, use \"[-1.2]\" or \"[10,100, ...]\" as example", file = sys.stderr)
+        sys.exit(1)
+
+
+    if "]" not in lines:
+        print("[ERROR] plotting lines parser error, not include \"]\"", file = sys.stderr)
+        print("[ERROR] For --xline or --yline, use \"[-1.2]\" or \"[10,100, ...]\" as example", file = sys.stderr)
+        sys.exit(1)
+
+
+    lines = lines.lstrip("[").rstrip("]")
+
+    try:
+        lines_list = lines.split(",")
+        lines_list = list(map(float, lines_list))
+
+    except:
+        lines_list = [float(lines)]
+
+
+    return lines_list
+
 
 
 
