@@ -4,7 +4,7 @@
 name = tmplot.py
 repository = https://github.com/th2ch-g/tmplot.py
 author = ["th 2022"]
-version = 0.1.1
+version = 0.1.2
 LICENSE = MIT-LICENSE
 """
 
