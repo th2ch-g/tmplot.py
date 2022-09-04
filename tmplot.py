@@ -24,15 +24,14 @@ def arg_parser():
             formatter_class = argparse.RawTextHelpFormatter)
 
     # mode option
-    parser.add_argument("mode", choices = ['plot', 'scatter', 'hist', 'bar', 'violin', 'box', 'pie', 'empty'],
+    parser.add_argument("mode", choices = ['plot', 'scatter', 'hist', 'bar', 'barh', 'pie', 'empty'],
             help = 'choose plot mode'\
             '\nplot    : connect the dots and draw them.'\
             '\nscatter : NOT connect the dots and draw them.'\
             '\nhist    : draw histogram'\
             '\nbar     : draw bar graph'\
-            '\nviolin  : draw violin plot'\
-            '\nbox     : draw a box-and-whisker diagram'\
-            '\npie     : draw pie charti'\
+            '\nbarh    : draw barh graph'\
+            '\npie     : draw pie chart'\
             '\nempty   : draw NOTHING')
 
     # basic data option
@@ -87,6 +86,7 @@ def arg_parser():
             help = "Flag whether inputed y data standardization"\
                     "If the data type is str, an error will occur")
 
+
     # output picture option
     parser.add_argument("-p", "--prefix", type = str, default = "out",
             help = "output picture file prefix. [default: out]")
@@ -96,13 +96,31 @@ def arg_parser():
             help = "output picture ylabel. [default: y] [default(hist): Frequency] [default(pie): \" \"]")
     parser.add_argument("-t", "--title", type = str, default = " ",
             help = "output picture title. [default: <NONE>] If you use \"--title t=p\", title will be the same as prefix")
-    parser.add_argument("-j", "--jpg", action = 'store_true', help = "Flag whether JPG output is performed. [default: <PREFIX>.png]")
+    parser.add_argument("--jpg", action = 'store_true', help = "Flag whether JPG output is performed. [default: <PREFIX>.png]")
+    parser.add_argument("--pdf", action = 'store_true', help = "Flag whether PDF output is performed. [default: <PREFIX>.png]")
+    parser.add_argument("--ps", action = 'store_true', help = "Flag whether PS output is performed. [default: <PREFIX>.png]")
     parser.add_argument("--transparent", action = "store_true", help = "Flag whether make the background of the output image transparent")
     parser.add_argument("--seaborn-off", action = "store_true", help = "Flag whether seaborn theme off")
     parser.add_argument("--grid-off", action = "store_true", help = "Flag whether turn off grid")
+    parser.add_argument("--figsize", type = str, default = "[6.4x4.8]",
+            help = "Change figsize (Ex. \"[10x7]\") [default: \"[6.4x4.8]\"]")
+    parser.add_argument("--xlabel-angle", type = float, default = 0,
+            help = "Change the angle of xlabel [default: 0]")
+    parser.add_argument("--ylabel-angle", type = float, default = 0,
+            help = "Change the angle of ylabel [default: 0]")
+    parser.add_argument("--xlabel-size", type = float, default = 10,
+            help = "Change the angle of xlabel [default: 10]")
+    parser.add_argument("--ylabel-size", type = float, default = 10,
+            help = "Change the angle of ylabel [default: 10]")
 
 
     # mode specific option
+    # plot mode
+    parser.add_argument("--plot-line-style", type = str, default = "-",
+            help = "Change main plot line style [CAUTION] if you use \"--\" and so on, argparser may occur error. [default: \"solid\"]")
+    parser.add_argument("--plot-line-width", type = float, default = 1,
+            help = "Change main plot line width [default: 1]")
+
     # hist mode option
     parser.add_argument("--hist-bins-width", type = float, default = 0,
             help = 'value of histogram bin width. (Ex. --hist-bins-width 0.7) [default: auto]'\
@@ -125,6 +143,9 @@ def arg_parser():
     parser.add_argument("--bar-width", type = float, default = 0.8,
             help = "Value of bar width [default: 0.8]")
 
+    # bar mode option
+    parser.add_argument("--barh-height", type = float, default = 0.8,
+            help = "Value of barh height [default: 0.8]")
 
 
     return parser.parse_args()
@@ -171,7 +192,7 @@ def common_plotter(args):
                 print("[WARN] When --hist-bins-width and --hist-bins are used together, --hist-bins takes precedence")
         print("[INFO] number of histogram bins : {}".format(bins), file = sys.stdout)
 
-    elif args.mode == "bar":
+    elif args.mode == "bar" or args.mode == "barh":
         xdata, ydata = data_parser(args)
     elif args.mode == "pie":
         xdata, ydata = data_parser(args)
@@ -192,7 +213,9 @@ def common_plotter(args):
     # figure prepare
     if args.seaborn_off == False:
         sns.set(style = "darkgrid", palette = "muted", color_codes = True)
-    fig, ax = plt.subplots()
+    fig_width, fig_height = figsize_parser(args.figsize)
+    print("[INFO] set figsize {} x {}".format(fig_width, fig_height), file = sys.stdout)
+    fig, ax = plt.subplots(figsize = (fig_width, fig_height))
     ax.set_xlabel(args.xlabel)
     if args.mode == "pie" and args.xlabel == "x":
         ax.set_xlabel(" ")
@@ -225,7 +248,7 @@ def common_plotter(args):
     print("[INFO] Main plot color is {}".format(args.color), file = sys.stdout)
 
     if args.mode == "plot":
-        plots = ax.plot(xdata, ydata, color = args.color, label = args.label)
+        plots = ax.plot(xdata, ydata, color = args.color, label = args.label, linewidth = args.plot_line_width, linestyle = args.plot_line_style)
         if args.label != None:
             legend_list.append(plots[0])
 
@@ -236,6 +259,8 @@ def common_plotter(args):
 
     elif args.mode == "hist":
         n, bins, patches = ax.hist(xdata, bins = bins, color = args.color, label = args.label)
+        if args.xlog == True:
+            print("[WARN] hist mode + xlog is unsupported, because of log can not be a negative", file = sys.stdout)
         if args.label != None:
             legend_list.append(patches[0])
         if args.hist_peak_highlight == True:
@@ -255,12 +280,6 @@ def common_plotter(args):
             print("[INFO] Color of histogram cumulative ratio plot is {}".format(args.hist_cumulative_color), file = sys.stdout)
             legend_list.append(lines[0])
 
-    elif args.mode == "box":
-        pass
-
-    elif args.mode == "violin":
-        pass
-
     elif args.mode == "pie":
         pie = ax.pie(ydata, labels = xdata, autopct="%.1f%%", pctdistance=0.7)
 
@@ -272,6 +291,15 @@ def common_plotter(args):
             print("[WARN] If bar width is larger than 1.0, bar graphs may be difficult to see.", file = sys.stdout)
         if args.label != None:
             legend_list.append(bar)
+
+    elif args.mode == "barh":
+        barh = ax.barh(xdata, ydata, color = args.color, label = args.label, height = args.barh_height)
+        if args.barh_height != 0.8:
+            print("[INFO] barh height is {}".format(args.barh_height), file = sys.stdout)
+        if args.barh_height > 1.0:
+            print("[WARN] If barh height is larger than 1.0, bar graphs may be difficult to see.", file = sys.stdout)
+        if args.label != None:
+            legend_list.append(barh)
 
     elif args.mode == "empty":
         pass
@@ -299,6 +327,9 @@ def common_plotter(args):
         print("[INFO] color of addtional yline is {}".format(args.yline_color), file = sys.stdout)
 
 
+    # rotate axis label
+    plt.setp(ax.get_xticklabels(), rotation = args.xlabel_angle, fontsize = args.xlabel_size)
+    plt.setp(ax.get_yticklabels(), rotation = args.ylabel_angle, fontsize = args.ylabel_size)
 
 
     # label
@@ -338,13 +369,53 @@ def common_plotter(args):
     if args.jpg :
         print("[INFO] output picture is {}".format(args.prefix + ".jpg"), file = sys.stdout)
         plt.savefig(args.prefix + ".jpg")
-    else :
-        print("[INFO] output picture is {}".format(args.prefix + ".png"), file = sys.stdout)
-        plt.savefig(args.prefix + ".png")
+    if args.pdf :
+        print("[INFO] output picture is {}".format(args.prefix + ".pdf"), file = sys.stdout)
+        plt.savefig(args.prefix + ".pdf")
+    if args.ps :
+        print("[INFO] output picture is {}".format(args.prefix + ".ps"), file = sys.stdout)
+        plt.savefig(args.prefix + ".ps")
+
+    print("[INFO] output picture is {}".format(args.prefix + ".png"), file = sys.stdout)
+    plt.savefig(args.prefix + ".png")
 
 
 
 #===========================================================================
+
+
+def figsize_parser(figsize):
+
+    print("[INFO] plotting figsize parser is called", file = sys.stdout)
+
+    if "[" not in figsize:
+        print("[ERROR] plotting figsize parser error, not include \"[\"", file = sys.stderr)
+        print("[ERROR] For --figsize, use \"[6.4x4.8]\" as example", file = sys.stderr)
+        sys.exit(1)
+
+    if "]" not in figsize:
+        print("[ERROR] plotting figsize parser error, not include \"]\"", file = sys.stderr)
+        print("[ERROR] For --figsize, use \"[6.4x4.8]\" as example", file = sys.stderr)
+        sys.exit(1)
+
+    if "x" not in figsize:
+        print("[ERROR] plotting figsize parser error, not include \"x\"", file = sys.stderr)
+        print("[ERROR] For --figsize, use \"[6.4x4.8]\" as example", file = sys.stderr)
+        sys.exit(1)
+
+    figsize = figsize.lstrip("[").rstrip("]")
+    figsize_split = figsize.split("x")
+
+    if len(figsize_split) != 2:
+        print("[ERROR] plotting figsize parser error, not include 2 number", file = sys.stderr)
+        print("[ERROR] For --figsize, use \"[6.4x4.8]\" as example", file = sys.stderr)
+        sys.exit(1)
+
+    fig_width = float(figsize_split[0])
+    fig_height = float(figsize_split[1])
+
+    return fig_width, fig_height
+
 
 
 def lines_parser(lines):
@@ -374,7 +445,6 @@ def lines_parser(lines):
 
 
     return lines_list
-
 
 
 
@@ -511,7 +581,7 @@ def data_parser(args):
     elif args.xdata == "-" and args.ydata != "-":
         return data_from_pipe1(args.xtype), data_from_file(args.ydata, args.ytype)
 
-    elif args.xdata == "-" and args.ydata != "-":
+    elif args.xdata != "-" and args.ydata == "-":
         return data_from_file(args.xdata, args.xtype), data_from_pipe1(args.ytype)
 
     else:

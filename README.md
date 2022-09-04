@@ -54,6 +54,10 @@ sed -e "1i#\!$(which python3)" -i tmplot.py
     <img src="img/bar1.png" class="galleryItem" width=200px></img>
 </a>
 
+<a href=#barh1>
+    <img src="img/barh1.png" class="galleryItem" width=200px></img>
+</a>
+
 <a href=#pie1>
     <img src="img/pie1.png" class="galleryItem" width=200px></img>
 </a>
@@ -93,6 +97,12 @@ Ex. bar1
 cat data/tag1.txt | tmplot.py bar -x - -y - --xlabel datas -p bar1 -t bar1 --ylabel percent --yline "[0.5]" --yline-color purple --xtype str --color green
 ~~~
 
+<a id="barh1"></a>
+Ex. barh1
+~~~sh
+ cat data/tag1.txt  | python tmplot.py barh -x - -y - -xt str --barh-height 1 --color orange --label datas -p barh1 -t t=p -xl percentage -yl datas
+~~~
+
 <a id="pie1"></a>
 Ex. pie1
 ~~~sh
@@ -105,96 +115,8 @@ Ex. empty1
 tmplot.py empty -x - -y - -xl e1 -yl e2 -p empty1 -t t=p --xline "[1,2,3]" --yline "[2,3,4]" --xline-color green --yline-color cornflowerblue
 ~~~
 
-
-
 ## Mode & Options
-~~~
-usage: tmplot.py [-h] -x XDATA -y YDATA [-s SPLIT] [-xt {float,int,str}] [-yt {float,int,str}] [-c COLOR] [-l LABEL] [--xlim XLIM] [--ylim YLIM] [--xlog] [--ylog] [--xline XLINE] [--yline YLINE]
-                 [--xline-color XLINE_COLOR] [--yline-color YLINE_COLOR] [--xnorm] [--ynorm] [--xstand] [--ystand] [-p PREFIX] [-xl XLABEL] [-yl YLABEL] [-t TITLE] [-j] [--transparent] [--seaborn-off]
-                 [--grid-off] [--hist-bins-width HIST_BINS_WIDTH] [--hist-bins HIST_BINS] [--hist-cumulative] [--hist-cumulative-color HIST_CUMULATIVE_COLOR] [--hist-peak-highlight]
-                 [--hist-peak-highlight-color HIST_PEAK_HIGHLIGHT_COLOR] [--bar-width BAR_WIDTH]
-                 {plot,scatter,hist,bar,violin,box,pie,empty}
-
-Plotter that supports file and pipe input for quick description
-
-positional arguments:
-  {plot,scatter,hist,bar,violin,box,pie,empty}
-                        choose plot mode
-                        plot    : connect the dots and draw them.
-                        scatter : NOT connect the dots and draw them.
-                        hist    : draw histogram
-                        bar     : draw bar graph
-                        violin  : draw violin plot
-                        box     : draw a box-and-whisker diagram
-                        pie     : draw pie charti
-                        empty   : draw NOTHING
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -x XDATA, --xdata XDATA
-                        x_data of 2D-plot.
-                        Supports FILE name or PIPE input. For pipe input, use "-x - "
-  -y YDATA, --ydata YDATA
-                        y_data of 2D-plot.
-                        Supports FILE name or PIPE input. For pipe input, use "-y - "
-  -s SPLIT, --split SPLIT
-                        Target character for delimiter [default: <SPACE>]
-  -xt {float,int,str}, --xtype {float,int,str}
-                        Input x data type specification [default: float]
-  -yt {float,int,str}, --ytype {float,int,str}
-                        Input y data type specification [default: float]
-  -c COLOR, --color COLOR
-                        Main plotting color [default: cornflowerblue]
-                        (See the official matplotlib site for color choices. https://matplotlib.org/stable/gallery/color/named_colors.html)
-  -l LABEL, --label LABEL
-                        Main plotting label [default: <None>]
-  --xlim XLIM           plotting range. input data type must be int or float (Ex. --xlim "[10:100]") [default: not set]
-  --ylim YLIM           plotting range. input data type must be int or float (Ex. --ylim "[10:100]") [default: not set]
-  --xlog                Flag whether the x-axis should be log scaled
-  --ylog                Flag whether the y-axis should be log scaled
-  --xline XLINE         Draw an additional perpendicular lines to the x-axis (Ex. --xline 10) [default: not set]
-  --yline YLINE         Draw an Additional perpendicular lines to the y-axis (Ex. --yline 10) [default: not set]
-  --xline-color XLINE_COLOR
-                        Color of additional perpendicular lines to the x-axis [default: orange]
-                        (See the official matplotlib site for color choices. https://matplotlib.org/stable/gallery/color/named_colors.html)
-  --yline-color YLINE_COLOR
-                        Color of additional perpendicular lines to the y-axis [default: tomato]
-                        (See the official matplotlib site for color choices. https://matplotlib.org/stable/gallery/color/named_colors.html)
-  --xnorm               Flag whether inputed x data normalizationIf the data type is str, an error will occur
-  --ynorm               Flag whether inputed y data normalizationIf the data type is str, an error will occur
-  --xstand              Flag whether inputed x data standardizationIf the data type is str, an error will occur
-  --ystand              Flag whether inputed y data standardizationIf the data type is str, an error will occur
-  -p PREFIX, --prefix PREFIX
-                        output picture file prefix. [default: out]
-  -xl XLABEL, --xlabel XLABEL
-                        output picture xlabel. [default: x] [default(pie): " "]
-  -yl YLABEL, --ylabel YLABEL
-                        output picture ylabel. [default: y] [default(hist): Frequency] [default(pie): " "]
-  -t TITLE, --title TITLE
-                        output picture title. [default: <NONE>] If you use "--title t=p", title will be the same as prefix
-  -j, --jpg             Flag whether JPG output is performed. [default: <PREFIX>.png]
-  --transparent         Flag whether make the background of the output image transparent
-  --seaborn-off         Flag whether seaborn theme off
-  --grid-off            Flag whether turn off grid
-  --hist-bins-width HIST_BINS_WIDTH
-                        value of histogram bin width. (Ex. --hist-bins-width 0.7) [default: auto]
-                        [CAUTION] If combined with --hist-bins, --hist-bins takes precedence.
-  --hist-bins HIST_BINS
-                        number of bins in hist mode. (Ex. --hist-bins 60) [default: auto]
-                        [CAUTION] If combined with --hist-bins-width, --hist-bins takes precedence.
-  --hist-cumulative     Flag whether plot cumulative ratio with histogram
-  --hist-cumulative-color HIST_CUMULATIVE_COLOR
-                        Color of hitogram cumulative plot [default: green]
-                        (See the official matplotlib site for color choices. https://matplotlib.org/stable/gallery/color/named_colors.html)
-  --hist-peak-highlight
-                        Flag whether the major peaks of the histogram are drawn as vertical lines
-  --hist-peak-highlight-color HIST_PEAK_HIGHLIGHT_COLOR
-                        Color of histogram highlight bar [default: red]
-                        (See the official matplotlib site for color choices. https://matplotlib.org/stable/gallery/color/named_colors.html)
-  --bar-width BAR_WIDTH
-                        Value of bar width [default: 0.8]
-~~~
-
+See help message or [Support function & Usage](#support-function--usage)
 
 
 ## Support function & Usage
@@ -204,7 +126,9 @@ optional arguments:
 | FILE input                                        | O                   | tmplot.py -x test1.txt -y test2.txt                                               |
 | PIPE input                                        | O                   | cat test.txt &#124; tmplot.py plot -x - -y -                                      |
 | PNG output                                        | O                   | default output                                                                    |
-| JPG output                                        | O                   | cat test.txt &#124; tmplot.py plot -x - -y - --jpg                                |
+| JPG output                                        | O                   | --jpg                                                                             |
+| PDF output                                        | O                   | --pdf                                                                             |
+| ps output                                         | O                   | -ps                                                                               |
 | delimiter characters in PIPE input                | O                   | -s / --split  "\t"                                                                |
 | Specify input data type in xdata, ydata           | O                   | --xtype int, --xtype float, --xtype str, (ydata is the same way)                  |
 | set picture title                                 | O                   | --title title                                                                     |
@@ -216,8 +140,8 @@ optional arguments:
 | Draw a barplot                                    | O                   | cat test.txt &#124; tmplot.py bar -x - -y -                                       |
 | Draw a pie chart                                  | O                   | cat test.txt &#124; tmplot.py pie -x - -y -                                       |
 | Draw a bar chart                                  | O                   | cat test.txt &#124; tmplot.py bar -x - -y -                                       |
-| Draw a violin plot                                | X(O in the future)  |                                                                                   |
-| Draw a box plot                                   | X(O in the future)  |                                                                                   |
+| Draw a violin plot                                | X                   | Not supported due to differences in data structure                                |
+| Draw a box plot                                   | X                   | Not supported due to differences in data structure                                |
 | Draw NOTHING                                      | O                   | cat test.txt &#124; tmploy.py empy -x - -y -                                      |
 | Draw additional perpendicular line to the axis    | O                   | --xline "[0.3,-0.1,0.5]" (yline is the same way)                                  |
 | Change additional perpenddicular line to the axis | O                   | --xline-color black                                                               |
@@ -240,6 +164,7 @@ optional arguments:
 | Draw the cumulative ratio of histograms           | O                   | --hist-cumulative                                                                 |
 | Change the cumulative ratio of histograms         | O                   | --hist-cumulative-color orange                                                    |
 | Change bar width                                  | O                   | --bar-width 0.4                                                                   |
+| Change barh height                                | O                   | --barh-height 0.4                                                                 |
 
 
 ## Other tmplot
