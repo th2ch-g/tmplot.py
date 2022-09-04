@@ -100,7 +100,7 @@ cat data/tag1.txt | tmplot.py bar -x - -y - --xlabel datas -p bar1 -t bar1 --yla
 <a id="barh1"></a>
 Ex. barh1
 ~~~sh
- cat data/tag1.txt  | python tmplot.py barh -x - -y - -xt str --barh-height 1 --color orange --label datas -p barh1 -t t=p -xl percentage -yl datas
+ cat data/tag1.txt  | tmplot.py barh -x - -y - -xt str --barh-height 1 --color orange --label datas -p barh1 -t t=p -xl percentage -yl datas
 ~~~
 
 <a id="pie1"></a>
