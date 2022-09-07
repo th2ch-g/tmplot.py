@@ -2,6 +2,8 @@
 
 One liner Plotter for when you just want to draw a little diagram.
 
+![silicon1.png](img/silicon1.png)
+
 
 - [tmplot.py](#tmplotpy)
   - [Install tmplot.py](#install-tmplotpy)
