@@ -52,6 +52,10 @@ sed -e "1i#\!$(which python3)" -i tmplot.py
     <img src="img/hist2.png" class="galleryItem" width=200px></img>
 </a>
 
+<a href=#hist3>
+    <img src="img/hist3.png" class="galleryItem" width=200px></img>
+</a>
+
 <a href=#bar1>
     <img src="img/bar1.png" class="galleryItem" width=200px></img>
 </a>
@@ -62,6 +66,14 @@ sed -e "1i#\!$(which python3)" -i tmplot.py
 
 <a href=#pie1>
     <img src="img/pie1.png" class="galleryItem" width=200px></img>
+</a>
+
+<a href=#window1>
+    <img src="img/window1.png" class="galleryIterm" width=200px></img>
+</a>
+
+<a href=#joint1>
+    <img src="img/joint1.png" class="galleryIterm" width=200px></img>
 </a>
 
 <a href=#empty1>
@@ -93,6 +105,12 @@ Ex. hist2
 for i in {0..100}; do echo ""; done | awk '{print rand()}' | tmplot.py hist -x - -y - --hist-cumulative -p hist2 -t t=p --seaborn-off --label rand --hist-bins 15
 ~~~
 
+<a id="hist2"></a>
+Ex. hist3
+~~~sh
+cat data/grauss.0.1.10k.txt | awk '{if($1 > 0){print $0}}' | tmplot.py hist -x - -y - --xlog --hist-bins 100 -p hist3 -t t=p --color blue --ylog --xlim "[0:100]"
+~~~
+
 <a id="bar1"></a>
 Ex. bar1
 ~~~sh
@@ -109,6 +127,18 @@ Ex. barh1
 Ex. pie1
 ~~~sh
 cat data/tag1.txt | tmplot.py pie -x - -y - -xt str --prefix pie1 -t t=p
+~~~
+
+<a id="window1"></a>
+Ex. window1
+~~~sh
+cat data/window_data.txt| tmplot.py window -x - -y - --window-size 50 -p window1 -c orange -xl position -yl read-coverage -t t=p
+~~~
+
+<a id="joint1"></a>
+Ex. joint1
+~~~sh
+cat data/window_data.txt | tmplot.py joint -x - -y - -p joint1 -t t=p -xl position -yl coverage
 ~~~
 
 <a id="empty1"></a>

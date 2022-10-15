@@ -1,13 +1,10 @@
 
 
-"""
-name = tmplot.py
-repository = https://github.com/th2ch-g/tmplot.py
-author = ["th 2022"]
-version = 0.1.2
-LICENSE = MIT-LICENSE
-"""
-
+# name = tmplot.py
+# repository = https://github.com/th2ch-g/tmplot.py
+# author = ["th 2022"]
+# version = 0.1.2
+# LICENSE = MIT-LICENSE
 
 
 import argparse
@@ -24,7 +21,7 @@ def arg_parser():
             formatter_class = argparse.RawTextHelpFormatter)
 
     # mode option
-    parser.add_argument("mode", choices = ['plot', 'scatter', 'hist', 'bar', 'barh', 'pie', 'empty'],
+    parser.add_argument("mode", choices = ['plot', 'scatter', 'hist', 'bar', 'barh', 'pie', 'window', 'joint', 'empty'],
             help = 'choose plot mode'\
             '\nplot    : connect the dots and draw them.'\
             '\nscatter : NOT connect the dots and draw them.'\
@@ -32,6 +29,8 @@ def arg_parser():
             '\nbar     : draw bar graph'\
             '\nbarh    : draw barh graph'\
             '\npie     : draw pie chart'\
+            '\nwindow  : draw moving-average-line'\
+            '\njoint   : draw jointplot'\
             '\nempty   : draw NOTHING')
 
     # basic data option
@@ -147,6 +146,20 @@ def arg_parser():
     parser.add_argument("--barh-height", type = float, default = 0.8,
             help = "Value of barh height [default: 0.8]")
 
+    # window mode option
+    parser.add_argument("--window-size", type = int, default = 1,
+                        help = "Window size of moving-plot(Ex. --window-size 1000) [default: 1]")
+    parser.add_argument("--window-line-style", type = str, default = "-",
+                        help = "Change main plot line style [CAUTION] if you user \"--\" and so on, argparser may occur error. [default: \"solid\"]")
+    parser.add_argument("--window-line-width", type = float, default = 1,
+                        help = "Change main plot line width [default: 1]")
+
+    # joint mode option
+    parser.add_argument("--joint-ratio", type = int, default = 4,
+                        help = "Ratio of jointplot [default: 4]")
+    parser.add_argument("--joint-marker", type = str, default = "+",
+                        help = "Marker of jointplot [deafult: +]")
+
 
     return parser.parse_args()
 
@@ -160,7 +173,7 @@ def common_plotter(args):
     print("[INFO] input x-data type is read as {}".format(args.xtype), file = sys.stdout)
     print("[INFO] input y-data type is read as {}".format(args.ytype), file = sys.stdout)
 
-    if args.mode == "plot" or args.mode == "scatter":
+    if args.mode == "plot" or args.mode == "scatter" or args.mode == "window" or args.mode == "joint":
         xdata, ydata = data_parser(args)
 
     elif args.mode == "hist":
@@ -176,13 +189,11 @@ def common_plotter(args):
             # Sturges' rule.
             print("[INFO] number of histogram bins is determined by Sturges's rurle", file = sys.stdout)
             bins = int(np.log2(len(xdata))) + 1
-            """
-            # Freedman Diaconis' choice
-            print("[INFO] number of histogram bins is determined by Freedman–Diaconis' choice", file = sys.stdout)
-            q75, q25 = np.percentile(data, [75 ,25])
-            iqr = q75 - q25
-            bins = int(2 * iqr / pow(len(data), 1/3))
-            """
+            # # Freedman Diaconis' choice
+            # print("[INFO] number of histogram bins is determined by Freedman–Diaconis' choice", file = sys.stdout)
+            # q75, q25 = np.percentile(data, [75 ,25])
+            # iqr = q75 - q25
+            # bins = int(2 * iqr / pow(len(data), 1/3))
         else:
             if args.hist_bins_width != 0:
                 bins = int(args.hist_bins_width * len(xdata))
@@ -258,9 +269,14 @@ def common_plotter(args):
             legend_list.append(scatters[0])
 
     elif args.mode == "hist":
-        n, bins, patches = ax.hist(xdata, bins = bins, color = args.color, label = args.label)
+        if args.xlog == False:
+            n, bins, patches = ax.hist(xdata, bins = bins, color = args.color, label = args.label)
         if args.xlog == True:
-            print("[WARN] hist mode + xlog is unsupported, because of log can not be a negative", file = sys.stdout)
+            if np.min(xdata) <= 0:
+                print("[ERROR] xdata contain minus", file = sys.stderr)
+                print("[ERROR] please remove minus data", file = sys.stderr)
+                sys.exit(1)
+            n, bins, patches = ax.hist(xdata, bins = np.logspace(np.min(xdata), np.max(xdata), bins), color = args.color, label = args.label)
         if args.label != None:
             legend_list.append(patches[0])
         if args.hist_peak_highlight == True:
@@ -300,6 +316,17 @@ def common_plotter(args):
             print("[WARN] If barh height is larger than 1.0, bar graphs may be difficult to see.", file = sys.stdout)
         if args.label != None:
             legend_list.append(barh)
+
+    elif args.mode == "window":
+        xdata, ydata = moving_average(xdata, ydata, args.window_size)
+        window = ax.plot(xdata, ydata, color = args.color, label = args.label, linewidth = args.window_line_width, linestyle = args.window_line_style)
+        if args.label != None:
+            legend_list.append(window)
+
+    elif args.mode == "joint":
+        jointplot = sns.jointplot(x = xdata, y = ydata, ratio = args.joint_ratio , marginal_ticks=True, marker = args.joint_marker)
+        if args.label != None:
+            legend_list.append(jointplot)
 
     elif args.mode == "empty":
         pass
@@ -590,17 +617,48 @@ def data_parser(args):
 
 #===========================================================================
 
+def moving_average(xdata, ydata, window_size):
 
-"""
-def data_cut(data, min_, max_):
+    print("[INFO] moving_average converter is called", file = sys.stdout)
 
-   return list(filter(lambda x: min_ <= x <= max_, data))
+    new_xdata = []
+    new_ydata = []
+    tmp_xdata = []
+    tmp_ydata = []
 
-def data_together(data, multiply):
+    count = 0
 
-    return list(map(lambda x: x * multiply, data))
-"""
+    while True:
 
+        if len(xdata) <= count:
+            break
+
+        tmp_xdata.append(xdata[count])
+        tmp_ydata.append(ydata[count])
+
+        count += 1
+
+        if count % window_size == 0:
+            new_xdata.append(np.mean(tmp_xdata))
+            new_ydata.append(np.mean(tmp_ydata))
+            tmp_xdata = []
+            tmp_ydata = []
+
+    if count % window_size != 0:
+        new_xdata.append(np.mean(tmp_xdata))
+        new_ydata.append(np.mean(tmp_ydata))
+
+    return new_xdata, new_ydata
+
+
+# def data_cut(data, min_, max_):
+#
+#    return list(filter(lambda x: min_ <= x <= max_, data))
+#
+# def data_together(data, multiply):
+#
+#     return list(map(lambda x: x * multiply, data))
+#
 
 def data_normalize(data):
 
