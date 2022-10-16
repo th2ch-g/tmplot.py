@@ -21,7 +21,7 @@ def arg_parser():
             formatter_class = argparse.RawTextHelpFormatter)
 
     # mode option
-    parser.add_argument("mode", choices = ['plot', 'scatter', 'hist', 'bar', 'barh', 'pie', 'window', 'joint', 'empty'],
+    parser.add_argument("mode", choices = ['plot', 'scatter', 'hist', 'bar', 'barh', 'pie', 'window', 'joint', 'violin', 'box', 'empty'],
             help = 'choose plot mode'\
             '\nplot    : connect the dots and draw them.'\
             '\nscatter : NOT connect the dots and draw them.'\
@@ -31,6 +31,7 @@ def arg_parser():
             '\npie     : draw pie chart'\
             '\nwindow  : draw moving-average-line'\
             '\njoint   : draw jointplot'\
+            '\nviolin  : draw violin plot'\
             '\nempty   : draw NOTHING')
 
     # basic data option
@@ -78,10 +79,10 @@ def arg_parser():
     parser.add_argument("--ynorm", action = "store_true",
             help = "Flag whether inputed y data normalization"\
                     "If the data type is str, an error will occur")
-    parser.add_argument("--xstand", action = "store_true",
+    parser.add_argument("--xstd", action = "store_true",
             help = "Flag whether inputed x data standardization"\
                     "If the data type is str, an error will occur")
-    parser.add_argument("--ystand", action = "store_true",
+    parser.add_argument("--ystd", action = "store_true",
             help = "Flag whether inputed y data standardization"\
                     "If the data type is str, an error will occur")
 
@@ -200,8 +201,16 @@ def common_plotter(args):
             if args.hist_bins != 0:
                 bins = args.hist_bins
             if args.hist_bins != 0 and args.hist_bins_width != 0:
-                print("[WARN] When --hist-bins-width and --hist-bins are used together, --hist-bins takes precedence")
+                print("[WARN] When --hist-bins-width and --hist-bins are used together, --hist-bins takes precedence", file = stdout)
         print("[INFO] number of histogram bins : {}".format(bins), file = sys.stdout)
+
+    elif args.mode == "violin" or args.mode == "box":
+        if args.ydata != "-":
+            print("[WARN] If violin or box mode, inputed ydata is ignored", file = sys.stdout)
+        if args.xdata == "-":
+            xdata = data_from_pipe1(args.xtype)
+        else:
+            xdata = data_from_file(args.xdata, args.xtype)
 
     elif args.mode == "bar" or args.mode == "barh":
         xdata, ydata = data_parser(args)
@@ -213,11 +222,11 @@ def common_plotter(args):
     # data modify
     if args.xnorm == True:
         xdata = data_normalize(xdata)
-    if args.xstand == True:
+    if args.xstd == True:
         xdata = data_standardize(xdata)
     if args.ynorm == True:
         ydata = data_normalize(ydata)
-    if args.ystand == True:
+    if args.ystd == True:
         ydata = data_standardize(ydata)
 
 
@@ -325,8 +334,19 @@ def common_plotter(args):
 
     elif args.mode == "joint":
         jointplot = sns.jointplot(x = xdata, y = ydata, ratio = args.joint_ratio , marginal_ticks=True, marker = args.joint_marker)
+        jointplot.ax_joint.set_xlabel(args.xlabel)
+        jointplot.ax_joint.set_ylabel(args.ylabel)
+        jointplot.figure.tight_layout()
+
+    elif args.mode == "violin":
+        violin = ax.violinplot([xdata])
         if args.label != None:
-            legend_list.append(jointplot)
+            legend_list.append(violin)
+
+    elif args.mode == "box":
+        box = ax.boxplot([xdata])
+        if args.label != None:
+            legend_list.append(box)
 
     elif args.mode == "empty":
         pass

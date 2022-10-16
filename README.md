@@ -29,7 +29,6 @@ sed -e "1i#\!$(which python3)" -i tmplot.py
 
 ## Update
 ~~~sh
-git fetch origin main && \
 git fetch origin main && git reset --hard origin/main && \
 sed -e "1i#\!$(which python3)" -i tmplot.py
 ~~~
@@ -80,11 +79,19 @@ sed -e "1i#\!$(which python3)" -i tmplot.py
 </a>
 
 <a href=#window1>
-    <img src="img/window1.png" class="galleryIterm" width=200px></img>
+    <img src="img/window1.png" class="galleryItem" width=200px></img>
 </a>
 
 <a href=#joint1>
-    <img src="img/joint1.png" class="galleryIterm" width=200px></img>
+    <img src="img/joint1.png" class="galleryItem" width=200px></img>
+</a>
+
+<a href=#violin1>
+    <img src="img/violin1.png" class="galleryItem", width=200px></img>
+</a>
+
+<a href=#box1>
+    <img src="img/box1.png" class="galleryItem", width=200px></img>
 </a>
 
 <a href=#empty1>
@@ -107,7 +114,7 @@ for i in {0..100}; do echo ""; done | awk '{print rand(), rand()}' | tmplot.py s
 <a id="hist1"></a>
 Ex. hist1
 ~~~sh
-cat data/grauss.0.1.10k.txt | tmplot.py hist -x - -y - -p hist1 -t t=p --label gauss.0.1.10k --hist-peak-highlight
+cat data/gauss.0.1.10k.txt | tmplot.py hist -x - -y - -p hist1 -t t=p --label gauss.0.1.10k --hist-peak-highlight
 ~~~
 
 <a id="hist2"></a>
@@ -119,7 +126,7 @@ for i in {0..100}; do echo ""; done | awk '{print rand()}' | tmplot.py hist -x -
 <a id="hist2"></a>
 Ex. hist3
 ~~~sh
-cat data/grauss.0.1.10k.txt | awk '{if($1 > 0){print $0}}' | tmplot.py hist -x - -y - --xlog --hist-bins 100 -p hist3 -t t=p --color blue --ylog --xlim "[0:100]"
+cat data/gauss.0.1.10k.txt | awk '{if($1 > 0){print $0}}' | tmplot.py hist -x - -y - --xlog --hist-bins 100 -p hist3 -t t=p --color blue --ylog --xlim "[0:100]"
 ~~~
 
 <a id="bar1"></a>
@@ -149,7 +156,19 @@ cat data/window_data.txt| tmplot.py window -x - -y - --window-size 50 -p window1
 <a id="joint1"></a>
 Ex. joint1
 ~~~sh
-cat data/window_data.txt | tmplot.py joint -x - -y - -p joint1 -t t=p -xl position -yl coverage
+cat data/window_data.txt | tmplot.py joint -x - -y - -p joint1 -xl position -yl coverage
+~~~
+
+<a id="violin1"></a>
+Ex. violin1
+~~~sh
+cat data/gauss.4.5.10k.txt | tmplot.py violin -x - -y - -p violin1 -xl gauss.4.5.10k -yl Distribution -t t=p
+~~~
+
+<a id="box1"></a>
+Ex. box1
+~~~sh
+cat data/gauss.3.3.20k.txt | tmplot.py box -x - -y - -xl gauss.3.3.20k -yl Distribution -p box1 -t t=p
 ~~~
 
 <a id="empty1"></a>
@@ -167,7 +186,7 @@ tmplot.py empty -x - -y - -xl e1 -yl e2 -p empty1 -t t=p --xline "[1,2,3]" --yli
 | PNG output                                        | O                   | default output                                                                    |
 | JPG output                                        | O                   | --jpg                                                                             |
 | PDF output                                        | O                   | --pdf                                                                             |
-| ps output                                         | O                   | -ps                                                                               |
+| ps output                                         | O                   | --ps                                                                              |
 | delimiter characters in PIPE input                | O                   | -s / --split  "\t"                                                                |
 | Specify input data type in xdata, ydata           | O                   | --xtype int, --xtype float, --xtype str, (ydata is the same way)                  |
 | set picture title                                 | O                   | --title title                                                                     |
@@ -179,8 +198,8 @@ tmplot.py empty -x - -y - -xl e1 -yl e2 -p empty1 -t t=p --xline "[1,2,3]" --yli
 | Draw a barplot                                    | O                   | cat test.txt &#124; tmplot.py bar -x - -y -                                       |
 | Draw a pie chart                                  | O                   | cat test.txt &#124; tmplot.py pie -x - -y -                                       |
 | Draw a bar chart                                  | O                   | cat test.txt &#124; tmplot.py bar -x - -y -                                       |
-| Draw a violin plot                                | X                   | Not supported due to differences in data structure                                |
-| Draw a box plot                                   | X                   | Not supported due to differences in data structure                                |
+| Draw a violin plot                                | X                   | Only one of the x data is supported in the data structure                         |
+| Draw a box plot                                   | X                   | Only one of the x data is supported in the data structure                         |
 | Draw NOTHING                                      | O                   | cat test.txt &#124; tmploy.py empy -x - -y -                                      |
 | Draw additional perpendicular line to the axis    | O                   | --xline "[0.3,-0.1,0.5]" (yline is the same way)                                  |
 | Change additional perpenddicular line to the axis | O                   | --xline-color black                                                               |
@@ -192,7 +211,7 @@ tmplot.py empty -x - -y - -xl e1 -yl e2 -p empty1 -t t=p --xline "[1,2,3]" --yli
 | Change color of main mode drawings                | O                   | -c / --color green                                                                |
 | sort input data                                   | X                   | use: sort command                                                                 |
 | normalize input data                              | O                   | --xnorm, --ynorm                                                                  |
-| standardize input data                            | O                   | --xstand, --ystand                                                                |
+| standardize input data                            | O                   | --xstd, --ystd                                                                    |
 | Drawing range on x-axis, y-axis                   | O                   | --xlim "[1:10]" (ylim is the same way)                                            |
 | Cut off input data at maximum and minimum values  | X                   | use: --xlim or --ylim or awk                                                      |
 | Perform the same process on all input data.       | X                   | use: awk '{print $1 * 2, $2 + 10}'                                                |
