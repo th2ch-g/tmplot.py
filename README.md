@@ -1,4 +1,9 @@
 # tmplot.py
+![last-commit](https://img.shields.io/github/last-commit/th2ch-g/tmplot.py)
+![license](https://img.shields.io/github/license/th2ch-g/tmplot.py)
+![language](https://img.shields.io/github/languages/top/th2ch-g/tmplot.py)
+![repo-size](https://img.shields.io/github/repo-size/th2ch-g/tmplot.py)
+![stars](https://img.shields.io/github/stars/th2ch-g/tmplot.py)
 
 One liner Plotter for when you just want to draw a little diagram.
 
@@ -6,24 +11,31 @@ One liner Plotter for when you just want to draw a little diagram.
 
 
 - [tmplot.py](#tmplotpy)
-  - [Install tmplot.py](#install-tmplotpy)
+  - [Install](#install)
+  - [Update](#update)
     - [dependencies](#dependencies)
   - [Gallery](#gallery)
   - [Quick start](#quick-start)
-  - [Mode & Options](#mode--options)
   - [Support function & Usage](#support-function--usage)
   - [Other tmplot](#other-tmplot)
 
 
-
-## Install tmplot.py
-~~~
+## Install
+~~~sh
 git clone https://github.com/th2ch-g/tmplot.py.git && \
 cd tmplot.py && \
 sed -e "1i#\!$(which python3)" -i tmplot.py
 ~~~
 
+## Update
+~~~sh
+git fetch origin main && \
+git fetch origin main && git reset --hard origin/main && \
+sed -e "1i#\!$(which python3)" -i tmplot.py
+~~~
+
 [CAUTION] Please write shebang in a text editor etc, as using sed on MacOS may cause errors.
+
 
 ### dependencies
 - python3 (>=3.9.12 tested)
@@ -32,7 +44,6 @@ sed -e "1i#\!$(which python3)" -i tmplot.py
     - numpy
     - argparse
     - sys
-
 
 
 ## Gallery
@@ -146,10 +157,6 @@ Ex. empty1
 ~~~sh
 tmplot.py empty -x - -y - -xl e1 -yl e2 -p empty1 -t t=p --xline "[1,2,3]" --yline "[2,3,4]" --xline-color green --yline-color cornflowerblue
 ~~~
-
-## Mode & Options
-See help message or [Support function & Usage](#support-function--usage)
-
 
 ## Support function & Usage
 
