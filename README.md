@@ -33,7 +33,8 @@ git fetch origin main && git reset --hard origin/main && \
 sed -e "1i#\!$(which python3)" -i tmplot.py
 ~~~
 
-[CAUTION] Please write shebang in a text editor etc, as using sed on MacOS may cause errors.
+### CAUTION
+Please write shebang in a text editor etc, as using sed on MacOS may cause errors.
 
 
 ### dependencies
