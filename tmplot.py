@@ -1,11 +1,4 @@
-
-
-# name = tmplot.py
-# repository = https://github.com/th2ch-g/tmplot.py
-# author = ["th 2022"]
-# version = 0.1.2
-# LICENSE = MIT-LICENSE
-
+#!/usr/bin/env python3
 
 import argparse
 import matplotlib.pyplot as plt
@@ -217,8 +210,6 @@ def common_plotter(args):
     elif args.mode == "pie":
         xdata, ydata = data_parser(args)
 
-
-
     # data modify
     if args.xnorm == True:
         xdata = data_normalize(xdata)
@@ -228,7 +219,6 @@ def common_plotter(args):
         ydata = data_normalize(ydata)
     if args.ystd == True:
         ydata = data_standardize(ydata)
-
 
     # figure prepare
     if args.seaborn_off == False:
@@ -634,42 +624,30 @@ def data_parser(args):
     else:
         return data_from_file(args.xdata, args.xtype), data_from_file(args.ydata, args.ytype)
 
-
 #===========================================================================
 
 def moving_average(xdata, ydata, window_size):
-
     print("[INFO] moving_average converter is called", file = sys.stdout)
-
     new_xdata = []
     new_ydata = []
     tmp_xdata = []
     tmp_ydata = []
-
     count = 0
-
     while True:
-
         if len(xdata) <= count:
             break
-
         tmp_xdata.append(xdata[count])
         tmp_ydata.append(ydata[count])
-
         count += 1
-
         if count % window_size == 0:
             new_xdata.append(np.mean(tmp_xdata))
             new_ydata.append(np.mean(tmp_ydata))
             tmp_xdata = []
             tmp_ydata = []
-
     if count % window_size != 0:
         new_xdata.append(np.mean(tmp_xdata))
         new_ydata.append(np.mean(tmp_ydata))
-
     return new_xdata, new_ydata
-
 
 # def data_cut(data, min_, max_):
 #
@@ -681,38 +659,25 @@ def moving_average(xdata, ydata, window_size):
 #
 
 def data_normalize(data):
-
     print("[INFO] data_normalize is called", file = sys.stdout)
-
     max_ = np.max(data)
     min_ = np.min(data)
-
     return list(map(lambda x: (x - min_) / (max_ - min_), data))
 
 
 def data_standardize(data):
-
     print("[INFO] data_standardize is called", file = sys.stdout)
-
     mean_ = np.mean(data)
     std_ = np.std(data)
-
     return list(map(lambda x: (x - mean_) / std_, data))
-
 
 #===========================================================================
 
-
 # main
 if __name__ == "__main__":
-
     # arg
     args = arg_parser()
-
     # mode
     print("[INFO] {} mode".format(args.mode), file = sys.stdout)
-
     common_plotter(args)
-
     print("[INFO] tmplot.py done", file = sys.stdout)
-

@@ -17,17 +17,16 @@ One liner Plotter for when you just want to draw a little diagram.
   - [Gallery](#gallery)
   - [Quick start](#quick-start)
   - [Support function & Usage](#support-function--usage)
-  - [Other tmplot](#other-tmplot)
 
 
-## Install
+## Install and change shebang
 ~~~sh
 git clone https://github.com/th2ch-g/tmplot.py.git && \
 cd tmplot.py && \
 sed -e "1i#\!$(which python3)" -i tmplot.py
 ~~~
 
-## Update
+## Update and change shebang
 ~~~sh
 git fetch origin main && git reset --hard origin/main && \
 sed -e "1i#\!$(which python3)" -i tmplot.py
@@ -224,7 +223,3 @@ tmplot.py empty -x - -y - -xl e1 -yl e2 -p empty1 -t t=p --xline "[1,2,3]" --yli
 | Change the cumulative ratio of histograms         | O                   | --hist-cumulative-color orange                                                    |
 | Change bar width                                  | O                   | --bar-width 0.4                                                                   |
 | Change barh height                                | O                   | --barh-height 0.4                                                                 |
-
-
-## Other tmplot
-tmplot (all written in Rust) https://github.com/th2ch-g/tmplot
