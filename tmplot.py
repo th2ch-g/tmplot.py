@@ -210,7 +210,7 @@ def arg_parser():
         help="Flag whether make the background of the output image transparent",
     )
     parser.add_argument("--seaborn-off", action="store_true", help="Flag whether seaborn theme off")
-    parser.add_argument("--grid-off", action="store_true", help="Flag whether turn off grid")
+    parser.add_argument("--grid-on", action="store_true", help="Flag whether turn on grid")
     parser.add_argument(
         "--figsize",
         type=str,
@@ -625,10 +625,9 @@ def common_plotter(args):
         print("[WARN] NOT assign label", file=sys.stdout)
 
     # grid
-    if args.grid_off == True:
-        print("[INFO] set grid off", file=sys.stdout)
-        ax.grid()
-        plt.grid()
+    if args.grid_on == True:
+        print("[INFO] set grid on", file=sys.stdout)
+        plt.grid(True)
 
     # data plotting range
     if args.xlim != None:

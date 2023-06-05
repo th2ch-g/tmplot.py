@@ -204,7 +204,7 @@ tmplot.py empty -x - -y - -xl e1 -yl e2 -p empty1 -t t=p --xline "[1,2,3]" --yli
 | Draw additional perpendicular line to the axis    | O                   | --xline "[0.3,-0.1,0.5]" (yline is the same way)                                  |
 | Change additional perpenddicular line to the axis | O                   | --xline-color black                                                               |
 | Log scale on axis                                 | O                   | --xlog or --ylog                                                                  |
-| Set grid on / off                                 | O                   | default / --grid-off                                                              |
+| Set grid on / off                                 | O                   | --grid-on / default                                                               |
 | Set seaborn theme on / off                        | O                   | default / --seaborn-off                                                           |
 | Make the background transparent                   | O                   | --transparent                                                                     |
 | Label main mode drawings                          | O                   | -l / --label foo                                                                  |
