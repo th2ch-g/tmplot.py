@@ -19,6 +19,8 @@ class Hist(CommonPlotter):
 
         # figure prepare
         fig, ax = plt.subplots(figsize=(self.fig_width, self.fig_height))
+        ax.set_xlabel(self.args.xlabel)
+        ax.set_ylabel(self.args.ylabel)
 
         # hist
         ax.hist(self.xdata, color=self.args.color)

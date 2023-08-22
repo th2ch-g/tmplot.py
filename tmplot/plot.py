@@ -19,6 +19,8 @@ class Plot(CommonPlotter):
 
         # figure prepare
         fig, ax = plt.subplots(figsize=(self.fig_width, self.fig_height))
+        ax.set_xlabel(self.args.xlabel)
+        ax.set_ylabel(self.args.ylabel)
 
         # plot
         ax.plot(self.xdata, self.ydata, color=self.args.color)
