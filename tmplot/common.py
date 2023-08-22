@@ -111,26 +111,28 @@ class CommonPlotter(metaclass=ABCMeta):
         if self.args.ylim is not None:
             self.ymin, self.ymax = self.range_parse(self.args.ylim)
             LOGGER.info(f"ylim: {self.ymin}:{self.ymay}")
-        # seaborn
-        if self.args.seaborn_off is False:
-            sns.set(style="darkgrid", palette="muted", color_codes=True)
-        # grid
-        if self.args.grid_off is False:
-            plt.grid(True)
         # figure prepare
         self.fig, self.ax = plt.subplots(figsize=(self.fig_width, self.fig_height))
         self.ax.set_xlabel(self.args.xlabel)
         self.ax.set_ylabel(self.args.ylabel)
         self.ax.set_title(self.args.title)
+        # seaborn
+        if self.args.seaborn_off is False:
+            sns.set(style="darkgrid", palette="muted", color_codes=True)
+        # grid
+        if self.args.grid_off is False:
+            self.ax.grid()
         # plot range
         if self.args.xlim is not None:
-            plt.xlim(self.xmin, self.xmax)
+            self.ax.xlim(self.xmin, self.xmax)
         if self.args.ylim is not None:
-            plt.ylim(self.ymin, self.ymax)
+            self.ax.ylim(self.ymin, self.ymax)
 
     def save(self) -> None:
         self.fig.tight_layout()
         if self.args.out is not None:
             plt.savefig(self.args.out)
+            LOGGER.info(f"figure name is {self.args.out}")
         else:
+            LOGGER.info(f"No file output. Will use additional window")
             plt.show()
