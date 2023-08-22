@@ -30,15 +30,13 @@ class CommonPlotter(metaclass=ABCMeta):
     def data_parse(self, dim: int) -> Tuple[List[Any]]:
         if self.args.file == "-":
             LOGGER.info("pipe input")
-            return self.data_parse_from_pipe(dim)
+            input_source = sys.stdin
         else:
             LOGGER.info("file input")
-            return self.data_parse_from_file(dim)
-
-    def data_parse_from_pipe(self, dim: int) -> Tuple[List[Any]]:
+            input_source = open(self.args.file)
         xdata = []
         ydata = []
-        for line in sys.stdin:
+        for line in input_source:
             line = line.rstrip()
             a = line.split(self.args.split)
             # xdata
@@ -48,30 +46,6 @@ class CommonPlotter(metaclass=ABCMeta):
                 xdata.append(int(a[0]))
             elif self.args.xtype == "str":
                 xdata.append(str(a[0]))
-            if dim >= 2:
-                # ydata
-                if self.args.ytype == "float":
-                    ydata.append(float(a[1]))
-                elif self.args.ytype == "int":
-                    ydata.append(int(a[1]))
-                elif self.args.ytype == "str":
-                    ydata.append(str(a[1]))
-        return (xdata, ydata)
-
-    def data_parse_from_file(self, dim: int) -> Tuple[List[Any]]:
-        xdata = []
-        ydata = []
-        with open(self.args.file) as ref:
-            for line in ref:
-                line = line.rstrip()
-                a = line.split(self.args.split)
-                # xdata
-                if self.args.xtype == "float":
-                    xdata.append(float(a[0]))
-                elif self.args.xtype == "int":
-                    xdata.append(int(a[0]))
-                elif self.args.xtype == "str":
-                    xdata.append(str(a[0]))
             if dim >= 2:
                 # ydata
                 if self.args.ytype == "float":
@@ -104,14 +78,6 @@ class CommonPlotter(metaclass=ABCMeta):
         # figsize
         self.fig_width, self.fig_height = self.range_parse(self.args.figsize)
         LOGGER.info(f"figsize: {self.fig_width}x{self.fig_height}")
-        # range
-        if self.args.xlim is not None:
-            self.xmin, self.xmax = self.range_parse(self.args.xlim)
-            LOGGER.info(f"xlim: {self.xmin}:{self.xmax}")
-        if self.args.ylim is not None:
-            self.ymin, self.ymax = self.range_parse(self.args.ylim)
-            LOGGER.info(f"ylim: {self.ymin}:{self.ymay}")
-        # figure prepare
         self.fig, self.ax = plt.subplots(figsize=(self.fig_width, self.fig_height))
         self.ax.set_xlabel(self.args.xlabel)
         self.ax.set_ylabel(self.args.ylabel)
@@ -124,8 +90,12 @@ class CommonPlotter(metaclass=ABCMeta):
             self.ax.grid()
         # plot range
         if self.args.xlim is not None:
+            self.xmin, self.xmax = self.range_parse(self.args.xlim)
+            LOGGER.info(f"xlim: {self.xmin}:{self.xmax}")
             plt.xlim(self.xmin, self.xmax)
         if self.args.ylim is not None:
+            self.ymin, self.ymax = self.range_parse(self.args.ylim)
+            LOGGER.info(f"ylim: {self.ymin}:{self.ymay}")
             plt.ylim(self.ymin, self.ymax)
 
     def save(self) -> None:
