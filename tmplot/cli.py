@@ -43,10 +43,6 @@ def add_common_option(args: argparse.ArgumentParser) -> argparse.ArgumentParser:
 
     args.add_argument("--xlim", type=str, help="ex. [10:150]")
     args.add_argument("--ylim", type=str, help="ex. [10:150]")
-    args.add_argument(
-        "--seaborn-off",
-        action="store_true",
-    )
     args.add_argument("--grid-off", action="store_true")
     args.add_argument("-c", "--color", type=str, help="[default: cornflowerblue]")
 

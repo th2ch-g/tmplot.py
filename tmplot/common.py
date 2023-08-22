@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from typing import Any, List, Tuple
 
 import matplotlib
-import seaborn as sns
 from matplotlib import pyplot as plt
 
 from .logger import generate_logger
@@ -82,12 +81,10 @@ class CommonPlotter(metaclass=ABCMeta):
         self.ax.set_xlabel(self.args.xlabel)
         self.ax.set_ylabel(self.args.ylabel)
         self.ax.set_title(self.args.title)
-        # seaborn
-        if self.args.seaborn_off is False:
-            sns.set(style="darkgrid", palette="muted", color_codes=True)
         # grid
         if self.args.grid_off is False:
             self.ax.grid()
+            LOGGER.info(f"grid on")
         # plot range
         if self.args.xlim is not None:
             self.xmin, self.xmax = self.range_parse(self.args.xlim)
