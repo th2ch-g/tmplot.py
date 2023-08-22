@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 matplotlib = "*"
-seaborn = "*"
 
 [dev-packages]
 pysen = "~=0.10"
@@ -18,5 +17,6 @@ mypy = "*"
 [scripts]
 fmt = "pysen run format"
 lint = "pysen run lint"
+
 # [requires]
 # python_version = ">=3.7"
