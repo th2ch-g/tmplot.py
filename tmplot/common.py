@@ -134,5 +134,5 @@ class CommonPlotter(metaclass=ABCMeta):
             plt.savefig(self.args.out)
             LOGGER.info(f"figure name is {self.args.out}")
         else:
-            LOGGER.info(f"No file output. Will use additional window")
+            LOGGER.info("No file output. Will use additional window")
             plt.show()
