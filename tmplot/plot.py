@@ -21,6 +21,7 @@ class Plot(CommonPlotter):
         fig, ax = plt.subplots(figsize=(self.fig_width, self.fig_height))
         ax.set_xlabel(self.args.xlabel)
         ax.set_ylabel(self.args.ylabel)
+        ax.set_title(self.args.title)
 
         # plot
         ax.plot(self.xdata, self.ydata, color=self.args.color)
@@ -34,7 +35,7 @@ class Plot(CommonPlotter):
 
         # save
         fig.tight_layout()
-        if self.args.out is None:
+        if self.args.out is not None:
             plt.savefig(self.args.out)
         else:
             plt.show()
