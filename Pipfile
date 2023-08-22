@@ -5,22 +5,18 @@ name = "pypi"
 
 [packages]
 matplotlib = "*"
-numpy = "*"
 seaborn = "*"
 
 [dev-packages]
-pysen = "0.10"
-flake8 = "==3.8.4"
-flake8-bugbear = "==20.11.1"
-black = "==22.8.0"
-isort = "==5.1.4"
-mypy = "==0.971"
+pysen = "~=0.10"
+flake8 = "*"
+flake8-bugbear = "*"
+black = "*"
+isort = "*"
+mypy = "*"
 
 [scripts]
-r = "python3 tmplot.py"
-format = "pysen run format"
+fmt = "pysen run format"
 lint = "pysen run lint"
-
-[requires]
-python_version = "3.11"
-
+# [requires]
+# python_version = ">=3.7"
