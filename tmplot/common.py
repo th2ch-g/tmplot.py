@@ -124,9 +124,9 @@ class CommonPlotter(metaclass=ABCMeta):
             self.ax.grid()
         # plot range
         if self.args.xlim is not None:
-            self.ax.xlim(self.xmin, self.xmax)
+            plt.xlim(self.xmin, self.xmax)
         if self.args.ylim is not None:
-            self.ax.ylim(self.ymin, self.ymax)
+            plt.ylim(self.ymin, self.ymax)
 
     def save(self) -> None:
         self.fig.tight_layout()
