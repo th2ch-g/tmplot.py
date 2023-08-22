@@ -4,6 +4,10 @@ from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 from typing import Any, List, Tuple
 
+import matplotlib
+import seaborn as sns
+from matplotlib import pyplot as plt
+
 from .logger import generate_logger
 
 LOGGER = generate_logger(__name__)
@@ -20,6 +24,8 @@ class CommonPlotter(metaclass=ABCMeta):
     xmax: float = None
     ymin: float = None
     ymax: float = None
+    fig: matplotlib.figure.Figure = None
+    ax: matplotlib.axes._axes.Axes = None
 
     def data_parse(self, dim: int) -> Tuple[List[Any]]:
         if self.args.file == "-":
@@ -105,3 +111,26 @@ class CommonPlotter(metaclass=ABCMeta):
         if self.args.ylim is not None:
             self.ymin, self.ymax = self.range_parse(self.args.ylim)
             LOGGER.info(f"ylim: {self.ymin}:{self.ymay}")
+        # seaborn
+        if self.args.seaborn_off is False:
+            sns.set(style="darkgrid", palette="muted", color_codes=True)
+        # grid
+        if self.args.grid_off is False:
+            plt.grid(True)
+        # figure prepare
+        self.fig, self.ax = plt.subplots(figsize=(self.fig_width, self.fig_height))
+        self.ax.set_xlabel(self.args.xlabel)
+        self.ax.set_ylabel(self.args.ylabel)
+        self.ax.set_title(self.args.title)
+        # plot range
+        if self.args.xlim is not None:
+            plt.xlim(self.xmin, self.xmax)
+        if self.args.ylim is not None:
+            plt.ylim(self.ymin, self.ymax)
+
+    def save(self) -> None:
+        self.fig.tight_layout()
+        if self.args.out is not None:
+            plt.savefig(self.args.out)
+        else:
+            plt.show()

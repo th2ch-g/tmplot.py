@@ -56,7 +56,6 @@ def add_common_option(args: argparse.ArgumentParser) -> argparse.ArgumentParser:
         "-o",
         "--out",
         type=str,
-        default="",
         help="If you don't set this, tmplot open the plot window",
     )
     args.add_argument(
