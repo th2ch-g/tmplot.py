@@ -84,7 +84,7 @@ class CommonPlotter(metaclass=ABCMeta):
         # grid
         if self.args.grid_off is False:
             self.ax.grid()
-            LOGGER.info(f"grid on")
+            LOGGER.info("grid on")
         # plot range
         if self.args.xlim is not None:
             self.xmin, self.xmax = self.range_parse(self.args.xlim)
