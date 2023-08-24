@@ -73,9 +73,9 @@ class CommonPlotter(metaclass=ABCMeta):
         elif sys.argv[1] in ["hist"]:
             dim = 1
         if sys.argv[1] == "cat":
-            if self.args.mode in ["plot", "scatter"]:
+            if sys.argv[2] in ["plot", "scatter"]:
                 dim = 2
-            elif self.args.mode in ["hist"]:
+            elif sys.argv[2] in ["hist"]:
                 dim = 1
         self.xdata, self.ydata = self.data_parse(dim=dim)
         LOGGER.info("data_parse finished")

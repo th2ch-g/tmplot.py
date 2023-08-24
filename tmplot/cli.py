@@ -90,10 +90,17 @@ def cli() -> None:
 
     # cat
     parser_cat = subparsers.add_parser("cat", help="cat mode")
-    parser_cat = add_common_option(parser_cat)
-    parser_cat.add_argument(
-        "-m", "--mode", type=str, required=True, choices=["plot", "scatter", "hist"]
-    )
+    parser_cat_sub = parser_cat.add_subparsers()
+    # cat-plot
+    parser_cat_plot = parser_cat_sub.add_parser("plot", help="cat plot mode")
+    parser_cat_plot = add_common_option(parser_cat_plot)
+    # cat-scatter
+    parser_cat_scatter = parser_cat_sub.add_parser("scatter", help="cat scatter mode")
+    parser_cat_scatter = add_common_option(parser_cat_scatter)
+    # cat-hist
+    parser_cat_hist = parser_cat_sub.add_parser("hist", help="cat hist mode")
+    parser_cat_hist = add_common_option(parser_cat_hist)
+    parser_cat_hist.add_argument("-b", "--bin", type=int, help="number of bin-size")
 
     # assemble
     parser_asm = subparsers.add_parser("asm", help="assemble mode")
