@@ -2,6 +2,8 @@ import argparse
 import sys
 
 from ._version import __version__
+from .asm import Asm
+from .cat import Cat
 from .hist import Hist
 from .logger import generate_logger
 from .plot import Plot
@@ -86,6 +88,32 @@ def cli() -> None:
     parser_hist = add_common_option(parser_hist)
     parser_hist.add_argument("-b", "--bin", type=int, help="number of bin-size")
 
+    # cat
+    parser_cat = subparsers.add_parser("cat", help="cat mode")
+    parser_cat_sub = parser_cat.add_subparsers()
+    # cat-plot
+    parser_cat_plot = parser_cat_sub.add_parser("plot", help="cat plot mode")
+    parser_cat_plot = add_common_option(parser_cat_plot)
+    # cat-scatter
+    parser_cat_scatter = parser_cat_sub.add_parser("scatter", help="cat scatter mode")
+    parser_cat_scatter = add_common_option(parser_cat_scatter)
+    # cat-hist
+    parser_cat_hist = parser_cat_sub.add_parser("hist", help="cat hist mode")
+    parser_cat_hist = add_common_option(parser_cat_hist)
+    parser_cat_hist.add_argument("-b", "--bin", type=int, help="number of bin-size")
+
+    # assemble
+    parser_asm = subparsers.add_parser("asm", help="assemble mode")
+    parser_asm.add_argument(
+        "-f", "--file", type=str, help='If you want to use pipe input, use "-f -"'
+    )
+    parser_asm.add_argument(
+        "-o",
+        "--out",
+        type=str,
+        help="If you don't set this, tmplot open the plot window",
+    )
+
     args = parser.parse_args()
 
     # error
@@ -109,4 +137,10 @@ def cli() -> None:
     elif sys.argv[1] == "hist":
         hist = Hist(args=args)
         hist.run()
+    elif sys.argv[1] == "cat":
+        cat = Cat(args=args)
+        cat.run()
+    elif sys.argv[1] == "asm":
+        asm = Asm(args=args)
+        asm.run()
     LOGGER.info(f"{sys.argv[1]} finished")
