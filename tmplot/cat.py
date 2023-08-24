@@ -21,6 +21,7 @@ xtype={self.args.xtype}
 ytype={self.args.ytype}
 color={self.args.color}
 title={self.args.title}
+label={self.args.label}
 grid_off={self.args.grid_off}
 xlabel={self.args.xlabel}
 ylabel={self.args.ylabel}

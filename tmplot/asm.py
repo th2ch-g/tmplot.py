@@ -52,6 +52,10 @@ class Asm:
                 xlabel = line.split("xlabel=")[1]
             elif "ylabel=" in line:
                 ylabel = line.split("ylabel=")[1]
+            elif "label=" in line:
+                label = line.split("label=")[1]
+                if label == "None":
+                    label = None
             elif "xmin=" in line:
                 xmin = line.split("xmin=")[1]
                 if xmin != "None":
@@ -102,13 +106,15 @@ class Asm:
                 # plot by each mode
                 if mode == "plot":
                     LOGGER.info("plot mode called")
-                    ax.plot(xdata, ydata, color=color)
+                    ax.plot(xdata, ydata, color=color, label=label)
                 elif mode == "scatter":
                     LOGGER.info("scatter mode called")
-                    ax.scatter(xdata, ydata, color=color)
+                    ax.scatter(xdata, ydata, color=color, label=label)
                 elif mode == "hist":
                     LOGGER.info("hist mode called")
-                    ax.hist(xdata, ydata, color=color)
+                    ax.hist(xdata, ydata, color=color, label=label)
+                if label is not None:
+                    plt.legend()
         # save
         fig.tight_layout()
         if self.args.out is not None:

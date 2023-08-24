@@ -102,6 +102,8 @@ class CommonPlotter(metaclass=ABCMeta):
 
     def save(self) -> None:
         self.fig.tight_layout()
+        if self.args.label is not None:
+            plt.legend()
         if self.args.out is not None:
             plt.savefig(self.args.out)
             LOGGER.info(f"figure name is {self.args.out}")
