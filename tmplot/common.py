@@ -97,7 +97,7 @@ class CommonPlotter(metaclass=ABCMeta):
             plt.xlim(self.xmin, self.xmax)
         if self.args.ylim is not None:
             self.ymin, self.ymax = self.range_parse(self.args.ylim)
-            LOGGER.info(f"ylim: {self.ymin}:{self.ymay}")
+            LOGGER.info(f"ylim: {self.ymin}:{self.ymax}")
             plt.ylim(self.ymin, self.ymax)
 
     def save(self) -> None:
