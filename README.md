@@ -15,6 +15,11 @@ pip install "git+https://github.com/th2ch-g/tmplot.py.git"
 tmplot --version
 ~~~
 
+## Update
+~~~shell
+pip install "git+https://github.com/th2ch-g/tmplot.py.git" -U
+~~~
+
 ## Quick start
 ### plot mode
 ~~~shell
