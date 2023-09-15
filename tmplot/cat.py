@@ -33,5 +33,6 @@ fig_width={self.fig_width}
 fig_height={self.fig_height}
 xdata={self.xdata}
 ydata={self.ydata}
+bins={self.args.bins}
 # tmplot-cat-mode-end"""
         return out

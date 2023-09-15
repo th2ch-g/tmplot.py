@@ -19,9 +19,8 @@ def add_common_option(args: argparse.ArgumentParser) -> argparse.ArgumentParser:
         "--file",
         type=str,
         required=True,
-        help='If you want to use pipe input, use "-f -"',
+        help='input file must be space speparate file. If you want to use pipe input, use "-f -"',
     )
-    args.add_argument("-s", "--split", type=str, default=" ", help='[default: " "]')
     args.add_argument(
         "-xt",
         "--xtype",
@@ -54,7 +53,7 @@ def add_common_option(args: argparse.ArgumentParser) -> argparse.ArgumentParser:
         "-o",
         "--out",
         type=str,
-        help="If you don't set this, tmplot open the plot window",
+        help="If you don't set this, tmplot will open the additional plot window",
     )
     args.add_argument(
         "--figsize", type=str, default="[6.4:4.8]", help="[default: [6.4:4.8]]"
@@ -87,7 +86,7 @@ def cli() -> None:
     # hist
     parser_hist = subparsers.add_parser("hist", help="hist mode")
     parser_hist = add_common_option(parser_hist)
-    parser_hist.add_argument("-b", "--bin", type=int, help="number of bin-size")
+    parser_hist.add_argument("-b", "--bins", type=int, help="number of bin-size")
 
     # cat
     parser_cat = subparsers.add_parser("cat", help="cat mode")
@@ -101,7 +100,7 @@ def cli() -> None:
     # cat-hist
     parser_cat_hist = parser_cat_sub.add_parser("hist", help="cat hist mode")
     parser_cat_hist = add_common_option(parser_cat_hist)
-    parser_cat_hist.add_argument("-b", "--bin", type=int, help="number of bin-size")
+    parser_cat_hist.add_argument("-b", "--bins", type=int, help="number of bin-size")
 
     # assemble
     parser_asm = subparsers.add_parser("asm", help="assemble mode")

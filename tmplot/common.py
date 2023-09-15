@@ -37,7 +37,7 @@ class CommonPlotter(metaclass=ABCMeta):
         ydata = []
         for line in input_source:
             line = line.rstrip()
-            a = line.split(self.args.split)
+            a = line.split(" ")
             # xdata
             if self.args.xtype == "float":
                 xdata.append(float(a[0]))

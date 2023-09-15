@@ -85,6 +85,9 @@ class Asm:
             elif "ydata=" in line:
                 ydata = line.split("ydata=")[1]
                 ydata = self.line_data_parse(ydata, ytype)
+            elif "bins=" in line:
+                bins = line.split("bins=")[1]
+                bins = int(bins)
 
             if cat_num == 1 and cat_start is False:
                 # prepare figure
@@ -112,7 +115,7 @@ class Asm:
                     ax.scatter(xdata, ydata, color=color, label=label)
                 elif mode == "hist":
                     LOGGER.info("hist mode called")
-                    ax.hist(xdata, ydata, color=color, label=label)
+                    ax.hist(xdata, color=color, label=label, bins=bins)
                 if label is not None:
                     plt.legend()
         # save
@@ -130,6 +133,8 @@ class Asm:
         data = data.replace(", ", ",")
         data_list = data.split(",")
         out_list = []
+        if data_list == [""]:
+            return out_list
         for d in data_list:
             if data_type == "float":
                 out_list.append(float(d))
