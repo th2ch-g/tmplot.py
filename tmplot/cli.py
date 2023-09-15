@@ -19,7 +19,8 @@ def add_common_option(args: argparse.ArgumentParser) -> argparse.ArgumentParser:
         "--file",
         type=str,
         required=True,
-        help='input file must be space speparate file. If you want to use pipe input, use "-f -"',
+        help='input file must be space speparate file. \
+                If you want to use pipe input, use "-f -"',
     )
     args.add_argument(
         "-xt",
