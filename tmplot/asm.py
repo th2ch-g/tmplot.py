@@ -87,7 +87,10 @@ class Asm:
                 ydata = self.line_data_parse(ydata, ytype)
             elif "bins=" in line:
                 bins = line.split("bins=")[1]
-                bins = int(bins)
+                try:
+                    bins = int(bins)
+                except Exception:
+                    bins = None
 
             if cat_num == 1 and cat_start is False:
                 # prepare figure
