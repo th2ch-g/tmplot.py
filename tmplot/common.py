@@ -102,9 +102,9 @@ class CommonPlotter(metaclass=ABCMeta):
 
         # log
         if self.args.ylog:
-            plt.yscale('log')
+            plt.yscale("log")
         if self.args.xlog:
-            plt.xscale('log')
+            plt.xscale("log")
 
     def save(self) -> None:
         self.fig.tight_layout()
