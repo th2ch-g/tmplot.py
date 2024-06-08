@@ -100,6 +100,12 @@ class CommonPlotter(metaclass=ABCMeta):
             LOGGER.info(f"ylim: {self.ymin}:{self.ymax}")
             plt.ylim(self.ymin, self.ymax)
 
+        # log
+        if self.args.ylog:
+            plt.yscale('log')
+        if self.args.xlog:
+            plt.xscale('log')
+
     def save(self) -> None:
         self.fig.tight_layout()
         if self.args.label is not None:
