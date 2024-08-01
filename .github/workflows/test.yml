@@ -1,0 +1,37 @@
+name: tmplot test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+    test:
+        name: test
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                python-version: [3.11.0]
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v3
+
+          - name: Set up Python ${{ matrix.python-version }}
+            uses: actions/setup-python@v4
+            with:
+              python-version: ${{ matrix.python-version }}
+
+          - name: Install pipenv
+            run: |
+              python -m pip install --upgrade pip
+              python -m pip install pipenv
+
+          - name: Install tmplot
+            run: pipenv install -e .
+
+          - name: Run test
+            run: |
+                cat sample.txt | pipenv run tmplot plot -f - -o test1.png
+                cat sample.txt | pipenv run tmplot scatter -f - -o test2.png
+                cat sample.txt | awk '{print $2}' | pipenv run tmplot hist -f - -o test3.png
+
