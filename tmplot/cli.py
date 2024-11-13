@@ -47,7 +47,7 @@ def add_single_data_option(args: argparse.ArgumentParser):
         help='input file must be space speparate file. \
                 If you want to use pipe input, use "-f -"',
     )
-    args.add_argument("-d", "--delimiter", type=str, default=" ", help="[default: ' ']")
+    args.add_argument("-d", "--delimiter", type=str, help="[default: ' ']")
 
 
 def add_multi_data_option(args: argparse.ArgumentParser):
@@ -59,7 +59,7 @@ def add_multi_data_option(args: argparse.ArgumentParser):
         nargs="*",
         help='input several data file, but "-f -" cannot be used',
     )
-    args.add_argument("-d", "--delimiter", type=str, default=" ", help="[default: ' ']")
+    args.add_argument("-d", "--delimiter", type=str, help="[default: ' ']")
 
 
 def cli() -> None:

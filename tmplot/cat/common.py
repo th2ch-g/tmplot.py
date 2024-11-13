@@ -47,9 +47,9 @@ class CommonPlotter(metaclass=ABCMeta):
         grid = plt.GridSpec(10, 10, wspace=0)
         self.ax1 = self.fig.add_subplot(grid[0:, 0:8])
         self.ax2 = self.fig.add_subplot(grid[0:, 8:])
-        self.ax1.set_title(self.args.set_title)
-        self.ax1.set_ylabel(self.args.set_ylabel)
-        self.ax1.set_xlabel(self.args.set_xlabel)
+        self.ax1.set_title(self.args.title)
+        self.ax1.set_ylabel(self.args.ylabel)
+        self.ax1.set_xlabel(self.args.xlabel)
         self.ax2.set_xlabel("Ratio [%]")
 
         # hist plot

@@ -12,13 +12,19 @@ LOGGER = generate_logger(__name__)
 def data_parse(file: str, delimiter: str) -> np.array:
     if file == "-":
         LOGGER.info("pipe input")
-        data = np.loadtxt(sys.stdin)
+        if delimiter is None:
+            data = np.loadtxt(sys.stdin)
+        else:
+            data = np.loadtxt(sys.stdin, delimiter=delimiter)
     else:
         LOGGER.info("file input")
         if Path(file).suffix == "npy":
             data = np.load(file)
         else:
-            data = np.loadtxt(file, delimiter=delimiter)
+            if delimiter is None:
+                data = np.loadtxt(file)
+            else:
+                data = np.loadtxt(file, delimiter=delimiter)
     return data
 
 
@@ -29,7 +35,6 @@ def data_parse_multi(files: List[str], delimiter: str) -> np.array:
             LOGGER.error("file name must not be '-'")
             exit(1)
         data.append(data_parse(file, delimiter))
-    data = np.array(data)
     return data
 
 
