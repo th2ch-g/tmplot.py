@@ -1,5 +1,7 @@
 from dataclasses import dataclass
+
 from .common import CommonPlotter
+
 
 @dataclass
 class Plot(CommonPlotter):

@@ -2,14 +2,13 @@ import argparse
 import sys
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import Any, List, Tuple
-import numpy as np
 
 import matplotlib
+import numpy as np
 from matplotlib import pyplot as plt
 
 from ..logger import generate_logger
-from ..util import data_parse, range_parse
+from ..util import data_parse, make_hist, range_parse
 
 LOGGER = generate_logger(__name__)
 
@@ -45,9 +44,9 @@ class CommonPlotter(metaclass=ABCMeta):
         LOGGER.info(f"figsize: {self.fig_width}x{self.fig_height}")
         self.fig = plt.figure(figsize=(self.fig_width, self.fig_height))
         grid = plt.GridSpec(10, 10, wspace=0)
-        self.ax1 = fig.add_subplot(grid[0:, 0:2]) # left hand histogram
-        self.ax2 = fig.add_subplot(grid[0:, 2:8]) # main 2data plot
-        self.ax3 = fig.add_subplot(grid[0:, 8:])  # right hand histogram
+        self.ax1 = self.fig.add_subplot(grid[0:, 0:2])  # left hand histogram
+        self.ax2 = self.fig.add_subplot(grid[0:, 2:8])  # main 2data plot
+        self.ax3 = self.fig.add_subplot(grid[0:, 8:])  # right hand histogram
         self.ax2.set_xlabel(self.args.xlabel)
         self.ax2.set_ylabel(self.args.ylabel)
         self.ax2.set_title(self.args.title)
@@ -58,9 +57,9 @@ class CommonPlotter(metaclass=ABCMeta):
         for t in [1, 2]:
             hist_data = []
             for data in self.data:
-                for data in data[:, t]:
-                    hist_data.append(data)
-            ydata, xdata = make_hist(hist_data, args.binsize)
+                for d in data[:, t]:
+                    hist_data.append(d)
+            ydata, xdata = make_hist(hist_data, self.args.binsize)
 
             if t == 1:
                 self.ax1.plot(ydata, xdata)

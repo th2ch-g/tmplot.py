@@ -2,14 +2,14 @@ import argparse
 import sys
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import Any, List, Tuple
-import numpy as np
+from typing import List
 
 import matplotlib
+import numpy as np
 from matplotlib import pyplot as plt
 
 from ..logger import generate_logger
-from ..util import data_parse, range_parse, make_dist
+from ..util import data_parse_multi, make_dist, range_parse
 
 LOGGER = generate_logger(__name__)
 
@@ -45,19 +45,19 @@ class CommonPlotter(metaclass=ABCMeta):
         LOGGER.info(f"figsize: {self.fig_width}x{self.fig_height}")
         self.fig = plt.figure(figsize=(self.fig_width, self.fig_height))
         grid = plt.GridSpec(10, 10, wspace=0)
-        self.ax1 = fig.add_subplot(grid[0:, 0:8])
-        self.ax2 = fig.add_subplot(grid[0:, 8:])
-        self.ax1.set_title(args.set_title)
-        self.ax1.set_ylabel(args.set_ylabel)
-        self.ax1.set_xlabel(args.set_xlabel)
+        self.ax1 = self.fig.add_subplot(grid[0:, 0:8])
+        self.ax2 = self.fig.add_subplot(grid[0:, 8:])
+        self.ax1.set_title(self.args.set_title)
+        self.ax1.set_ylabel(self.args.set_ylabel)
+        self.ax1.set_xlabel(self.args.set_xlabel)
         self.ax2.set_xlabel("Ratio [%]")
 
         # hist plot
         hist_data = []
         for data in self.data:
-            for data in data[:, 1]:
-                hist_data.append(data)
-        ydata, xdata = make_dist(hist_data, args.binsize)
+            for d in data[:, 1]:
+                hist_data.append(d)
+        ydata, xdata = make_dist(hist_data, self.args.binsize)
         self.ax2.plot(xdata, ydata)
 
         # grid

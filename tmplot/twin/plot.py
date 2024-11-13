@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 from .common import CommonPlotter
 
 
@@ -6,6 +7,7 @@ from .common import CommonPlotter
 class Plot(CommonPlotter):
     def run(self) -> None:
         self.ax2.plot(
-            self.xdata, self.ydata,
+            self.xdata,
+            self.ydata,
         )
         self.save()

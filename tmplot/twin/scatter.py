@@ -1,5 +1,5 @@
-
 from dataclasses import dataclass
+
 from .common import CommonPlotter
 
 
@@ -7,6 +7,7 @@ from .common import CommonPlotter
 class Scatter(CommonPlotter):
     def run(self) -> None:
         self.ax2.scatter(
-            self.xdata, self.ydata,
+            self.xdata,
+            self.ydata,
         )
         self.save()

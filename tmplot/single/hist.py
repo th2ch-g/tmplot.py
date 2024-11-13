@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from .common import CommonPlotter
 
+
 @dataclass
 class Hist(CommonPlotter):
     def run(self) -> None:

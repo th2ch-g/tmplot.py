@@ -2,10 +2,9 @@ import argparse
 import sys
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import Any, List, Tuple
-import numpy as np
 
 import matplotlib
+import numpy as np
 from matplotlib import pyplot as plt
 
 from ..logger import generate_logger
