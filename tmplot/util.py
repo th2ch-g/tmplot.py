@@ -18,7 +18,7 @@ def data_parse(file: str, delimiter: str) -> np.array:
         if Path(file).suffix == "npy":
             data = np.load(file)
         else:
-            data = np.loadxtxt(file, delimiter=delimiter)
+            data = np.loadtxt(file, delimiter=delimiter)
     return data
 
 
