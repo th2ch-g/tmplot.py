@@ -1,4 +1,4 @@
-name: pysen auto lint
+name: fmt,lint
 
 on:
   push:
