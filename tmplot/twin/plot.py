@@ -4,12 +4,10 @@ from .common import CommonPlotter
 
 
 @dataclass
-class Hist(CommonPlotter):
+class Plot(CommonPlotter):
     def run(self) -> None:
-        self.ax.hist(
+        self.ax2.plot(
             self.xdata,
-            color=self.args.color,
-            label=self.args.label,
-            bins=self.args.bins,
+            self.ydata,
         )
         self.save()

@@ -6,7 +6,6 @@ from .common import CommonPlotter
 @dataclass
 class Plot(CommonPlotter):
     def run(self) -> None:
-        self.ax.plot(
-            self.xdata, self.ydata, color=self.args.color, label=self.args.label
-        )
+        for data in self.data:
+            self.ax1.plot(data[:, 0], data[:, 1])
         self.save()

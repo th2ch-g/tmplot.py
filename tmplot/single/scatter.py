@@ -6,7 +6,5 @@ from .common import CommonPlotter
 @dataclass
 class Scatter(CommonPlotter):
     def run(self) -> None:
-        self.ax.scatter(
-            self.xdata, self.ydata, color=self.args.color, label=self.args.label
-        )
+        self.ax.scatter(self.data[:, 0], self.data[:, 1])
         self.save()
