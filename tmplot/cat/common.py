@@ -34,7 +34,7 @@ class CommonPlotter(metaclass=ABCMeta):
 
     def __post_init__(self) -> None:
         # data
-        self.data = data_parse_multi(self.args.file, self.args.delimiter)
+        self.data = data_parse_multi(self.args.files, self.args.delimiter)
         if sys.argv[1] in ["plot", "scatter"]:
             for data in self.data:
                 assert data.shape[1] == 2, "data shape must be (N, 2)"
