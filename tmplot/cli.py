@@ -105,21 +105,21 @@ def cli() -> None:
     # cat-plot
     # receive some data which have (N, 2) format
     parser_cat_plot = parser_cat_sub.add_parser("plot", help="cat plot mode")
-    add_single_data_option(parser_cat_plot)
+    add_multi_data_option(parser_cat_plot)
     add_common_figure_option(parser_cat_plot)
     add_hist_option(parser_cat_plot)
 
     # cat-scatter
     # receive some data which have (N, 2) format
     parser_cat_scatter = parser_cat_sub.add_parser("scatter", help="cat scatter mode")
-    add_single_data_option(parser_cat_scatter)
+    add_multi_data_option(parser_cat_scatter)
     add_common_figure_option(parser_cat_scatter)
     add_hist_option(parser_cat_scatter)
 
     # cat-hist
     # receive some data which have (N, 1) format
     parser_cat_hist = parser_cat_sub.add_parser("hist", help="cat hist mode")
-    add_single_data_option(parser_cat_hist)
+    add_multi_data_option(parser_cat_hist)
     add_common_figure_option(parser_cat_hist)
     add_hist_option(parser_cat_hist)
 
