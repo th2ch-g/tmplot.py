@@ -8,7 +8,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from ..logger import generate_logger
-from ..util import data_parse, make_hist, range_parse
+from ..util import data_parse, make_dist, range_parse
 
 LOGGER = generate_logger(__name__)
 
@@ -59,7 +59,7 @@ class CommonPlotter(metaclass=ABCMeta):
             for data in self.data:
                 for d in data[:, t]:
                     hist_data.append(d)
-            ydata, xdata = make_hist(hist_data, self.args.binsize)
+            ydata, xdata = make_dist(hist_data, self.args.binsize)
 
             if t == 1:
                 self.ax1.plot(ydata, xdata)
