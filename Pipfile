@@ -5,7 +5,8 @@ name = "pypi"
 
 [packages]
 matplotlib = "*"
-tmplot = { editable = true, path = "." }
+numpy = "*"
+tmplot = {editable = true, path = "."}
 
 [dev-packages]
 pysen = "~=0.10"

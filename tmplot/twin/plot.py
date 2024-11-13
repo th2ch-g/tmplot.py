@@ -1,12 +1,11 @@
 from dataclasses import dataclass
-
 from .common import CommonPlotter
 
 
 @dataclass
-class Scatter(CommonPlotter):
+class Plot(CommonPlotter):
     def run(self) -> None:
-        self.ax.scatter(
-            self.xdata, self.ydata, color=self.args.color, label=self.args.label
+        self.ax2.plot(
+            self.xdata, self.ydata,
         )
         self.save()
