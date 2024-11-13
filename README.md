@@ -48,10 +48,3 @@ $ head -n 5 sample.txt | awk '{print $2}'
 $ cat sample.txt | awk '{print $2}' | tmplot hist -f -
 ~~~
 
-### cat mode, asm mode
-~~~shell
-$ cat sample.txt | tmplot cat plot -f - -o tmp.tmplot
-$ cat sample.txt | tmplot cat plot -f - -o tmp.tmplot
-$ cat tmp.tmplot | tmplot asm -f -
-~~~
-
