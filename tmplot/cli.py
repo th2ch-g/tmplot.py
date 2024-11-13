@@ -1,7 +1,6 @@
 import argparse
 import sys
 
-from ._version import __version__
 from .cat.hist import Hist as CatHist
 from .cat.plot import Plot as CatPlot
 from .cat.scatter import Scatter as CatScatter
@@ -70,8 +69,6 @@ def cli() -> None:
                     that supports file and pipe input for quick visualization"
         )
     )
-
-    parser.add_argument("-V", "--version", action="store_true", help="show version")
 
     # subcommands
     subparsers = parser.add_subparsers()
@@ -147,11 +144,6 @@ def cli() -> None:
     if len(sys.argv) == 1:
         LOGGER.error(f"Use {sys.argv[0]} -h")
         exit(1)
-
-    # version
-    if args.version is True:
-        print(f"{sys.argv[0]}", __version__)
-        exit(0)
 
     # subcommand process
     LOGGER.info(f"{sys.argv[1]} called")

@@ -1,14 +1,19 @@
-[tool.pysen]
-version = "0.10"
+[project]
+name = "tmplot.py"
+version = "0.4.1"
+description = "One liner Plotter that supports file and pipe input for quick visualization"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "matplotlib",
+    "numpy",
+]
 
-[tool.pysen.lint]
-enable_black = true
-enable_flake8 = true
-enable_isort = true
-enable_mypy = false
-mypy_preset = "strict"
-line_length = 88
-py_version = "py38"
+[project.urls]
+Repository = "https://github.com/th2ch-g/tmplot.py"
 
-[[tool.pysen.lint.mypy_targets]]
-  paths = ["./tmplot/*"]
+[project.scripts]
+tmplot = "tmplot.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["tmplot"]
