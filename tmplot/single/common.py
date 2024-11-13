@@ -36,7 +36,7 @@ class CommonPlotter(metaclass=ABCMeta):
         if sys.argv[1] in ["plot", "scatter"]:
             assert self.data.shape[1] == 2, "data shape must be (N, 2)"
         elif sys.argv[1] in ["hist"]:
-            assert self.data.shape[1] == 1, "data shape must be (N, 1)"
+            assert self.data.ndim == 1, "data shape must be (N, )"
         LOGGER.info("data_parse finished")
 
         # figsize

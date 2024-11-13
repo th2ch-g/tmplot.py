@@ -94,6 +94,7 @@ def cli() -> None:
     parser_hist = subparsers.add_parser("hist", help="hist mode")
     add_single_data_option(parser_hist)
     add_common_figure_option(parser_hist)
+    add_hist_option(parser_hist)
 
     # cat
     # receive some data from args, not stdin
