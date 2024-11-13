@@ -26,6 +26,7 @@ class CommonPlotter(metaclass=ABCMeta):
     fig: matplotlib.figure.Figure = None
     ax1: matplotlib.axes._axes.Axes = None
     ax2: matplotlib.axes._axes.Axes = None
+    ax2_2: matplotlib.axes._axes.Axes = None
     ax3: matplotlib.axes._axes.Axes = None
 
     @abstractmethod
@@ -46,19 +47,25 @@ class CommonPlotter(metaclass=ABCMeta):
         grid = plt.GridSpec(10, 10, wspace=0)
         self.ax1 = self.fig.add_subplot(grid[0:, 0:2])  # left hand histogram
         self.ax2 = self.fig.add_subplot(grid[0:, 2:8])  # main 2data plot
+        self.ax2_2 = self.ax2.twinx()
         self.ax3 = self.fig.add_subplot(grid[0:, 8:])  # right hand histogram
         self.ax2.set_xlabel(self.args.xlabel)
         self.ax2.set_ylabel(self.args.ylabel)
         self.ax2.set_title(self.args.title)
         self.ax1.set_xlabel("Ratio [%]")
         self.ax3.set_xlabel("Ratio [%]")
+        self.ax2.tick_params(axis='y', labelleft=False, labelright=False)
+        self.ax2_2.tick_params(axis='y', labelright=False)
+        self.ax1.invert_xaxis()
+        self.ax3.yaxis.tick_right()
+        self.ax3.yaxis.set_label_position("right")
+        plt.subplots_adjust(wspace=0, left=0.1, right=0.9)
 
         # make_hist1
         for t in [1, 2]:
             hist_data = []
-            for data in self.data:
-                for d in data[:, t]:
-                    hist_data.append(d)
+            for data in self.data[:, t]:
+                hist_data.append(data)
             ydata, xdata = make_dist(hist_data, self.args.binsize)
 
             if t == 1:
@@ -83,6 +90,7 @@ class CommonPlotter(metaclass=ABCMeta):
             LOGGER.info(f"ylim: {self.ymin}:{self.ymax}")
             self.ax1.set_ylim(self.ymin, self.ymax)
             self.ax2.set_ylim(self.ymin, self.ymax)
+            self.ax2_2.set_ylim(self.ymin, self.ymax)
             self.ax3.set_ylim(self.ymin, self.ymax)
 
     def save(self) -> None:
