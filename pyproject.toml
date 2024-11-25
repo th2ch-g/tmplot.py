@@ -16,7 +16,7 @@ Repository = "https://github.com/th2ch-g/tmplot.py"
 tmplot = "tmplot.__main__:main"
 
 [tool.setuptools.packages.find]
-where = ["tmplot"]
+where = ["."]
 
 [dependency-groups]
 dev = [
