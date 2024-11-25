@@ -1,5 +1,5 @@
 [project]
-name = "tmplot.py"
+name = "tmplot"
 version = "0.4.1"
 description = "One liner Plotter that supports file and pipe input for quick visualization"
 readme = "README.md"
