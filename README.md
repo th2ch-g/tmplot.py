@@ -10,9 +10,7 @@ One liner Plotter for when you just want to draw a little diagram.
 
 ## Install
 ~~~shell
-conda create -n plot "python>=3.7" -y
 pip install "git+https://github.com/th2ch-g/tmplot.py.git"
-tmplot --version
 ~~~
 
 ## Update
