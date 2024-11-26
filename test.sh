@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+uv --version
 tmplot="uv run python3 -m tmplot"
 
 cat data/sample.txt | $tmplot plot -f - -o test1.png
