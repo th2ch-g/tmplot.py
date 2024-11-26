@@ -1,21 +1,21 @@
-# tmplot.py
-![last-commit](https://img.shields.io/github/last-commit/th2ch-g/tmplot.py)
-![license](https://img.shields.io/github/license/th2ch-g/tmplot.py)
-![language](https://img.shields.io/github/languages/top/th2ch-g/tmplot.py)
-![repo-size](https://img.shields.io/github/repo-size/th2ch-g/tmplot.py)
-![stars](https://img.shields.io/github/stars/th2ch-g/tmplot.py)
+# tmplot
+![last-commit](https://img.shields.io/github/last-commit/th2ch-g/tmplot)
+![license](https://img.shields.io/github/license/th2ch-g/tmplot)
+![language](https://img.shields.io/github/languages/top/th2ch-g/tmplot)
+![repo-size](https://img.shields.io/github/repo-size/th2ch-g/tmplot)
+![stars](https://img.shields.io/github/stars/th2ch-g/tmplot)
 
 One liner Plotter for when you just want to draw a little diagram.
 
 
 ## Install
 ~~~shell
-pip install "git+https://github.com/th2ch-g/tmplot.py.git"
+pip install "git+https://github.com/th2ch-g/tmplot.git"
 ~~~
 
 ## Update
 ~~~shell
-pip install "git+https://github.com/th2ch-g/tmplot.py.git" -U
+pip install "git+https://github.com/th2ch-g/tmplot.git" -U
 ~~~
 
 ## Quick start
